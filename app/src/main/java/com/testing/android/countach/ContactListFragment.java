@@ -25,9 +25,13 @@ public class ContactListFragment extends Fragment {
 
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     public static final int CONTACTS_LOADER = 0;
-    private OnContactClickListener listener;
+    private ContactAdapter.OnContactClickListener listener;
     private ContactListLoaderCallbacks loaderCallbacks;
     private RecyclerView recyclerContactList;
+
+    public static ContactListFragment newInstance() {
+        return new ContactListFragment();
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -45,7 +49,7 @@ public class ContactListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        recyclerContactList = getView().findViewById(R.id.recycler_view_contact_list);
+        recyclerContactList = view.findViewById(R.id.recycler_view_contact_list);
         recyclerContactList.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerContactList.setAdapter(new ContactAdapter(listener));
     }
@@ -70,8 +74,8 @@ public class ContactListFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnContactClickListener) {
-            listener = (OnContactClickListener) context;
+        if (context instanceof ContactAdapter.OnContactClickListener) {
+            listener = (ContactAdapter.OnContactClickListener) context;
         } else {
             throw new ClassCastException(context.toString() + " must implement OnContactClickListener");
         }
@@ -99,7 +103,4 @@ public class ContactListFragment extends Fragment {
         ((ContactAdapter) recyclerContactList.getAdapter()).submitList(list);
     }
 
-    public interface OnContactClickListener {
-        void onContactClicked(Contact contact);
-    }
 }

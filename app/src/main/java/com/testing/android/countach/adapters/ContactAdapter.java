@@ -9,15 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.testing.android.countach.ContactListFragment;
 import com.testing.android.countach.R;
 import com.testing.android.countach.data.Contact;
 
 public class ContactAdapter extends ListAdapter<Contact, ContactAdapter.ContactViewHolder> {
 
-    private ContactListFragment.OnContactClickListener clickListener;
+    private OnContactClickListener clickListener;
 
-    public ContactAdapter(ContactListFragment.OnContactClickListener clickListener) {
+    public ContactAdapter(OnContactClickListener clickListener) {
         super(new ContactItemDiffCallback());
         this.clickListener = clickListener;
     }
@@ -69,5 +68,9 @@ public class ContactAdapter extends ListAdapter<Contact, ContactAdapter.ContactV
             textViewContactName.setText(contact.getName());
             textViewContactPhoneNumber.setText(contact.getPhoneNumber());
         }
+    }
+
+    public interface OnContactClickListener {
+        void onContactClicked(Contact contact);
     }
 }

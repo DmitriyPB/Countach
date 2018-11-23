@@ -25,6 +25,14 @@ public class ContactDetailFragment extends Fragment {
 
     private ContactDetailsLoaderCallbacks loaderCallbacks;
 
+    public static ContactDetailFragment newInstance(String lookupKey) {
+        ContactDetailFragment fragment = new ContactDetailFragment();
+        Bundle args = new Bundle();
+        args.putString(ContactDetailsLoaderCallbacks.LOOKUP_KEY_KEY, lookupKey);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
