@@ -1,7 +1,6 @@
 package com.testing.android.countach.adapters;
 
 import android.support.annotation.NonNull;
-
 import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
@@ -42,21 +41,19 @@ public class ContactAdapter extends ListAdapter<Contact, ContactAdapter.ContactV
 
         @Override
         public boolean areContentsTheSame(@NonNull Contact contact, @NonNull Contact anotherContact) {
-            return contact == anotherContact;
+            return contact.equals(anotherContact);
         }
     }
 
     class ContactViewHolder extends RecyclerView.ViewHolder {
-        private TextView text_view_contact_name;
-        private TextView text_view_contact_phone_number;
+        private TextView textViewContactName;
+        private TextView textViewContactPhoneNumber;
+        private Contact contact;
 
         ContactViewHolder(@NonNull View itemView) {
             super(itemView);
-            text_view_contact_name = itemView.findViewById(R.id.text_view_contact_name);
-            text_view_contact_phone_number = itemView.findViewById(R.id.text_view_contact_phone_number);
-        }
-
-        void bind(final Contact contact) {
+            textViewContactName = itemView.findViewById(R.id.text_view_contact_name);
+            textViewContactPhoneNumber = itemView.findViewById(R.id.text_view_contact_phone_number);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -65,8 +62,12 @@ public class ContactAdapter extends ListAdapter<Contact, ContactAdapter.ContactV
                     }
                 }
             });
-            text_view_contact_name.setText(contact.getName());
-            text_view_contact_phone_number.setText(contact.getPhoneNumber());
+        }
+
+        void bind(final Contact contact) {
+            this.contact = contact;
+            textViewContactName.setText(contact.getName());
+            textViewContactPhoneNumber.setText(contact.getPhoneNumber());
         }
     }
 }

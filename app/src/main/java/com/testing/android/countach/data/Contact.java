@@ -30,6 +30,31 @@ public class Contact {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Contact)) return false;
+
+        Contact contact = (Contact) o;
+
+        if (getName() != null ? !getName().equals(contact.getName()) : contact.getName() != null)
+            return false;
+        if (getPhoneNumber() != null ? !getPhoneNumber().equals(contact.getPhoneNumber()) : contact.getPhoneNumber() != null)
+            return false;
+        if (getEmail() != null ? !getEmail().equals(contact.getEmail()) : contact.getEmail() != null)
+            return false;
+        return getLookup() != null ? getLookup().equals(contact.getLookup()) : contact.getLookup() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getName() != null ? getName().hashCode() : 0;
+        result = 31 * result + (getPhoneNumber() != null ? getPhoneNumber().hashCode() : 0);
+        result = 31 * result + (getEmail() != null ? getEmail().hashCode() : 0);
+        result = 31 * result + (getLookup() != null ? getLookup().hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "Contact{" +
                 "name='" + name + '\'' +

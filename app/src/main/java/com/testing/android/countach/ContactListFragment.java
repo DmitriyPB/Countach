@@ -27,6 +27,7 @@ public class ContactListFragment extends Fragment {
     public static final int CONTACTS_LOADER = 0;
     private OnContactClickListener listener;
     private ContactListLoaderCallbacks loaderCallbacks;
+    private RecyclerView recyclerContactList;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -35,26 +36,24 @@ public class ContactListFragment extends Fragment {
         loadContactsWithPermissionCheck();
     }
 
-    private void loadContactsWithPermissionCheck() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getActivity().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
-        } else {
-            loadContacts();
-        }
-    }
-
-    private void loadContacts() {
-        LoaderManager.getInstance(this).initLoader(CONTACTS_LOADER, null, loaderCallbacks);
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_contact_list, container, false);
-        RecyclerView recycler_view_contact_list = root.findViewById(R.id.recycler_view_contact_list);
-        recycler_view_contact_list.setLayoutManager(new LinearLayoutManager(getContext()));
-        recycler_view_contact_list.setAdapter(new ContactAdapter(listener));
-        return root;
+        return inflater.inflate(R.layout.fragment_contact_list, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        recyclerContactList = getView().findViewById(R.id.recycler_view_contact_list);
+        recyclerContactList.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerContactList.setAdapter(new ContactAdapter(listener));
+    }
+
+    @Override
+    public void onDestroyView() {
+        recyclerContactList = null;
+        super.onDestroyView();
     }
 
     @Override
@@ -63,7 +62,7 @@ public class ContactListFragment extends Fragment {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 loadContactsWithPermissionCheck();
             } else {
-                Toast.makeText(getActivity(), getString(R.string.permission_denied_warning), Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), R.string.permission_denied_warning, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -80,12 +79,24 @@ public class ContactListFragment extends Fragment {
 
     @Override
     public void onDetach() {
-        super.onDetach();
         listener = null;
+        super.onDetach();
+    }
+
+    private void loadContactsWithPermissionCheck() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && requireContext().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+        } else {
+            loadContacts();
+        }
+    }
+
+    private void loadContacts() {
+        LoaderManager.getInstance(this).initLoader(CONTACTS_LOADER, null, loaderCallbacks);
     }
 
     public void applyContacts(List<Contact> list) {
-        ((ContactAdapter) ((RecyclerView) getView().findViewById(R.id.recycler_view_contact_list)).getAdapter()).submitList(list);
+        ((ContactAdapter) recyclerContactList.getAdapter()).submitList(list);
     }
 
     public interface OnContactClickListener {

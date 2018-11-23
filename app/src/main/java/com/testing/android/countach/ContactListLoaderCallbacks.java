@@ -38,7 +38,7 @@ public class ContactListLoaderCallbacks implements LoaderManager.LoaderCallbacks
     @Override
     public Loader<Cursor> onCreateLoader(int i, @Nullable Bundle bundle) {
         return new CursorLoader(
-                fragment.getContext(),
+                fragment.requireContext(),
                 ContactsContract.Data.CONTENT_URI,
                 PROJECTION,
                 null,

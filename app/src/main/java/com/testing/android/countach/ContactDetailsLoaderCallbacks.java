@@ -40,7 +40,7 @@ public class ContactDetailsLoaderCallbacks implements LoaderManager.LoaderCallba
             SELECTION_ARGS[0] = bundle.getString(LOOKUP_KEY_KEY);
         }
         return new CursorLoader(
-                fragment.getContext(),
+                fragment.requireContext(),
                 ContactsContract.Data.CONTENT_URI,
                 PROJECTION,
                 SELECTION,
