@@ -77,9 +77,7 @@ public class ContactDetailFragment extends MvpAppCompatFragment implements Conta
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState == null) {
-            loadContactDetailsWithPermissionCheck(getArguments());
-        }
+        loadContactDetailsWithPermissionCheck(getArguments());
     }
 
     @Override

@@ -64,9 +64,7 @@ public class ContactListFragment extends MvpAppCompatFragment implements Contact
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState == null) {
-            loadContactsWithPermissionCheck();
-        }
+        loadContactsWithPermissionCheck();
     }
 
     @Nullable
