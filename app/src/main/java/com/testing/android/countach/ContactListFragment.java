@@ -27,7 +27,7 @@ public class ContactListFragment extends Fragment {
     public static final int CONTACTS_LOADER = 0;
     private ContactAdapter.OnContactClickListener listener;
     private ContactListLoaderCallbacks loaderCallbacks;
-    private RecyclerView recyclerContactList;
+    private ContactAdapter contactAdapter;
 
     public static ContactListFragment newInstance() {
         return new ContactListFragment();
@@ -49,14 +49,15 @@ public class ContactListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        recyclerContactList = view.findViewById(R.id.recycler_view_contact_list);
+        RecyclerView recyclerContactList = view.findViewById(R.id.recycler_view_contact_list);
         recyclerContactList.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerContactList.setAdapter(new ContactAdapter(listener));
+        contactAdapter = new ContactAdapter(listener);
+        recyclerContactList.setAdapter(contactAdapter);
     }
 
     @Override
     public void onDestroyView() {
-        recyclerContactList = null;
+        contactAdapter = null;
         super.onDestroyView();
     }
 
@@ -100,7 +101,7 @@ public class ContactListFragment extends Fragment {
     }
 
     public void applyContacts(List<Contact> list) {
-        ((ContactAdapter) recyclerContactList.getAdapter()).submitList(list);
+        contactAdapter.submitList(list);
     }
 
 }
