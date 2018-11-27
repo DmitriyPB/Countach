@@ -1,4 +1,4 @@
-package com.testing.android.countach.adapters;
+package com.testing.android.countach.ui.adapters;
 
 import android.support.annotation.NonNull;
 import android.support.v7.recyclerview.extensions.ListAdapter;

@@ -1,4 +1,4 @@
-package com.testing.android.countach;
+package com.testing.android.countach.presentation.presenter;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -6,15 +6,23 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 
+import com.arellomobile.mvp.InjectViewState;
+import com.arellomobile.mvp.MvpPresenter;
 import com.testing.android.countach.data.Contact;
+import com.testing.android.countach.presentation.view.ContactListView;
 
-public class ContactDetailsLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
+import java.util.LinkedList;
+import java.util.List;
 
-    private static final String TAG = ContactDetailsLoaderCallbacks.class.getSimpleName();
+import static com.testing.android.countach.ui.fragment.ContactListFragment.CONTACTS_LOADER;
+
+@InjectViewState
+public class ContactListPresenter extends MvpPresenter<ContactListView> implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final String TAG = ContactListPresenter.class.getSimpleName();
+
     private static final String[] PROJECTION = {
             ContactsContract.CommonDataKinds.Contactables.LOOKUP_KEY,
             ContactsContract.CommonDataKinds.Contactables.MIMETYPE,
@@ -22,30 +30,27 @@ public class ContactDetailsLoaderCallbacks implements LoaderManager.LoaderCallba
             ContactsContract.CommonDataKinds.Phone.NUMBER,
             ContactsContract.CommonDataKinds.Email.ADDRESS
     };
-    private static final String SELECTION = ContactsContract.Data.LOOKUP_KEY + " = ?";
-    private String[] SELECTION_ARGS = {""};
 
-    public static final String LOOKUP_KEY_KEY = "lookup_key_key";
-    private ContactDetailFragment fragment;
+    private LoaderProvider loaderProvider;
 
-    public ContactDetailsLoaderCallbacks(ContactDetailFragment fragment) {
-        this.fragment = fragment;
+    public ContactListPresenter(LoaderProvider loaderProvider) {
+        this.loaderProvider = loaderProvider;
+    }
+
+    public void loadContacts(LoaderManager loaderManager) {
+        loaderManager.initLoader(CONTACTS_LOADER, null, this);
     }
 
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int i, @Nullable Bundle bundle) {
-        Log.d(TAG, "onCreateLoader()");
-        if (bundle != null) {
-            SELECTION_ARGS[0] = bundle.getString(LOOKUP_KEY_KEY);
-        }
-        return new CursorLoader(
-                fragment.requireContext(),
+        return loaderProvider.provideLoader(
                 ContactsContract.Data.CONTENT_URI,
                 PROJECTION,
-                SELECTION,
-                SELECTION_ARGS,
-                null);
+                null,
+                null,
+                ContactsContract.CommonDataKinds.Contactables.DISPLAY_NAME_PRIMARY
+        );
     }
 
     @Override
@@ -62,12 +67,25 @@ public class ContactDetailsLoaderCallbacks implements LoaderManager.LoaderCallba
 
         cursor.moveToFirst();
 
-        String lookupKey = null;
+        String lookupKey = "";
         String phoneNumber = null;
         String email = null;
         String name = null;
+        List<Contact> list = new LinkedList<>();
         do {
-            lookupKey = cursor.getString(lookupColumnIndex);
+            String currentLookupKey = cursor.getString(lookupColumnIndex);
+            if (!lookupKey.equals(currentLookupKey)) {
+                if (!lookupKey.isEmpty()) {
+                    if (name != null) {
+                        list.add(new Contact(name, phoneNumber, email, lookupKey));
+                    }
+                }
+                phoneNumber = null;
+                email = null;
+                name = null;
+                lookupKey = currentLookupKey;
+            }
+
             if (typeColumnIndex != -1) {
                 String mimeType = cursor.getString(typeColumnIndex);
                 if (mimeType.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
@@ -79,11 +97,9 @@ public class ContactDetailsLoaderCallbacks implements LoaderManager.LoaderCallba
                 }
             }
         } while (cursor.moveToNext());
-        fragment.applyContact(new Contact(name, phoneNumber, email, lookupKey));
+        getViewState().applyContacts(list);
     }
 
     @Override
-    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-
-    }
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) { }
 }

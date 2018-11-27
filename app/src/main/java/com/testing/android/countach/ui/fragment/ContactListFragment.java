@@ -1,14 +1,17 @@
-package com.testing.android.countach;
+package com.testing.android.countach.ui.fragment;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,18 +19,43 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.testing.android.countach.adapters.ContactAdapter;
+import com.arellomobile.mvp.MvpAppCompatFragment;
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.testing.android.countach.R;
 import com.testing.android.countach.data.Contact;
+import com.testing.android.countach.presentation.presenter.ContactListPresenter;
+import com.testing.android.countach.presentation.presenter.LoaderProvider;
+import com.testing.android.countach.presentation.view.ContactListView;
+import com.testing.android.countach.ui.adapters.ContactAdapter;
 
 import java.util.List;
 
-public class ContactListFragment extends Fragment {
+public class ContactListFragment extends MvpAppCompatFragment implements ContactListView {
 
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     public static final int CONTACTS_LOADER = 0;
     private ContactAdapter.OnContactClickListener listener;
-    private ContactListLoaderCallbacks loaderCallbacks;
     private ContactAdapter contactAdapter;
+
+    @InjectPresenter
+    ContactListPresenter presenter;
+
+    @ProvidePresenter
+    ContactListPresenter providePresenter() {
+        return new ContactListPresenter(new LoaderProvider() {
+            @Override
+            public Loader<Cursor> provideLoader(Uri contentUri, String[] PROJECTION, String selection, String[] selectionArgs, String sort) {
+                return new CursorLoader(
+                        requireContext(),
+                        contentUri,
+                        PROJECTION,
+                        selection,
+                        selectionArgs,
+                        sort);
+            }
+        });
+    }
 
     public static ContactListFragment newInstance() {
         return new ContactListFragment();
@@ -36,8 +64,9 @@ public class ContactListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        loaderCallbacks = new ContactListLoaderCallbacks(this);
-        loadContactsWithPermissionCheck();
+        if (savedInstanceState == null) {
+            loadContactsWithPermissionCheck();
+        }
     }
 
     @Nullable
@@ -92,14 +121,11 @@ public class ContactListFragment extends Fragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && requireContext().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
         } else {
-            loadContacts();
+            presenter.loadContacts(LoaderManager.getInstance(this));
         }
     }
 
-    private void loadContacts() {
-        LoaderManager.getInstance(this).initLoader(CONTACTS_LOADER, null, loaderCallbacks);
-    }
-
+    @Override
     public void applyContacts(List<Contact> list) {
         contactAdapter.submitList(list);
     }

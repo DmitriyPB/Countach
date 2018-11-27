@@ -1,12 +1,15 @@
-package com.testing.android.countach;
+package com.testing.android.countach.ui.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import com.testing.android.countach.adapters.ContactAdapter;
+import com.testing.android.countach.R;
 import com.testing.android.countach.data.Contact;
+import com.testing.android.countach.ui.adapters.ContactAdapter;
+import com.testing.android.countach.ui.fragment.ContactDetailFragment;
+import com.testing.android.countach.ui.fragment.ContactListFragment;
 
 public class MainActivity extends AppCompatActivity implements ContactAdapter.OnContactClickListener {
 

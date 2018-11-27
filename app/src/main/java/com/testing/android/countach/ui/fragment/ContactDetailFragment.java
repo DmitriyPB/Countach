@@ -1,34 +1,61 @@
-package com.testing.android.countach;
+package com.testing.android.countach.ui.fragment;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.arellomobile.mvp.MvpAppCompatFragment;
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.testing.android.countach.R;
 import com.testing.android.countach.data.Contact;
+import com.testing.android.countach.presentation.presenter.ContactDetailsPresenter;
+import com.testing.android.countach.presentation.presenter.LoaderProvider;
+import com.testing.android.countach.presentation.view.ContactDetailsView;
 
-public class ContactDetailFragment extends Fragment {
+public class ContactDetailFragment extends MvpAppCompatFragment implements ContactDetailsView {
     private static final int PERMISSIONS_REQUEST_READ_CONTACT_DETAIL = 101;
-    public static final int CONTACT_DETAILS_LOADER = 1;
+
     private TextView textViewName;
     private TextView textViewEmail;
     private TextView textViewPhone;
 
-    private ContactDetailsLoaderCallbacks loaderCallbacks;
+    @InjectPresenter
+    ContactDetailsPresenter presenter;
+
+    @ProvidePresenter
+    ContactDetailsPresenter providePresenter() {
+        return new ContactDetailsPresenter(new LoaderProvider() {
+            @Override
+            public Loader<Cursor> provideLoader(Uri contentUri, String[] PROJECTION, String selection, String[] selectionArgs, String sort) {
+                return new CursorLoader(
+                        requireContext(),
+                        contentUri,
+                        PROJECTION,
+                        selection,
+                        selectionArgs,
+                        sort);
+            }
+        });
+    }
 
     public static ContactDetailFragment newInstance(String lookupKey) {
         ContactDetailFragment fragment = new ContactDetailFragment();
         Bundle args = new Bundle();
-        args.putString(ContactDetailsLoaderCallbacks.LOOKUP_KEY_KEY, lookupKey);
+        args.putString(ContactDetailsPresenter.LOOKUP_KEY_KEY, lookupKey);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,8 +77,9 @@ public class ContactDetailFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        loaderCallbacks = new ContactDetailsLoaderCallbacks(this);
-        loadContactDetailsWithPermissionCheck(getArguments());
+        if (savedInstanceState == null) {
+            loadContactDetailsWithPermissionCheck(getArguments());
+        }
     }
 
     @Override
@@ -82,9 +110,10 @@ public class ContactDetailFragment extends Fragment {
     }
 
     private void loadContactDetails(Bundle arguments) {
-        LoaderManager.getInstance(this).initLoader(CONTACT_DETAILS_LOADER, arguments, loaderCallbacks);
+        presenter.loadContactDetails(arguments, LoaderManager.getInstance(this));
     }
 
+    @Override
     public void applyContact(Contact contact) {
         textViewName.setText(contact.getName());
         textViewEmail.setText(contact.getEmail());

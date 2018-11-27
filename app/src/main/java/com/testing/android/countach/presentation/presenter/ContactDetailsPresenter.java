@@ -1,4 +1,4 @@
-package com.testing.android.countach;
+package com.testing.android.countach.presentation.presenter;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -6,20 +6,19 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 
+import com.arellomobile.mvp.InjectViewState;
+import com.arellomobile.mvp.MvpPresenter;
 import com.testing.android.countach.data.Contact;
+import com.testing.android.countach.presentation.view.ContactDetailsView;
 
-import java.util.LinkedList;
-import java.util.List;
+@InjectViewState
+public class ContactDetailsPresenter extends MvpPresenter<ContactDetailsView> implements LoaderManager.LoaderCallbacks<Cursor> {
 
-public class ContactListLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
-
-    private static final String TAG = ContactListLoaderCallbacks.class.getSimpleName();
-    private ContactListFragment fragment;
-
+    private static final String TAG = ContactDetailsPresenter.class.getSimpleName();
+    private static final int CONTACT_DETAILS_LOADER = 1;
+    public static final String LOOKUP_KEY_KEY = "lookup_key_key";
     private static final String[] PROJECTION = {
             ContactsContract.CommonDataKinds.Contactables.LOOKUP_KEY,
             ContactsContract.CommonDataKinds.Contactables.MIMETYPE,
@@ -27,21 +26,31 @@ public class ContactListLoaderCallbacks implements LoaderManager.LoaderCallbacks
             ContactsContract.CommonDataKinds.Phone.NUMBER,
             ContactsContract.CommonDataKinds.Email.ADDRESS
     };
+    private static final String SELECTION = ContactsContract.Data.LOOKUP_KEY + " = ?";
+    private String[] SELECTION_ARGS = {""};
+    private LoaderProvider loaderProvider;
 
-    public ContactListLoaderCallbacks(ContactListFragment fragment) {
-        this.fragment = fragment;
+    public ContactDetailsPresenter(LoaderProvider loaderProvider) {
+        this.loaderProvider = loaderProvider;
+    }
+
+    public void loadContactDetails(Bundle arguments, LoaderManager loaderManager) {
+        loaderManager.initLoader(CONTACT_DETAILS_LOADER, arguments, this);
     }
 
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int i, @Nullable Bundle bundle) {
-        return new CursorLoader(
-                fragment.requireContext(),
+        if (bundle != null) {
+            SELECTION_ARGS[0] = bundle.getString(LOOKUP_KEY_KEY);
+        }
+        return loaderProvider.provideLoader(
                 ContactsContract.Data.CONTENT_URI,
                 PROJECTION,
-                null,
-                null,
-                ContactsContract.CommonDataKinds.Contactables.DISPLAY_NAME_PRIMARY);
+                SELECTION,
+                SELECTION_ARGS,
+                null
+        );
     }
 
     @Override
@@ -58,25 +67,12 @@ public class ContactListLoaderCallbacks implements LoaderManager.LoaderCallbacks
 
         cursor.moveToFirst();
 
-        String lookupKey = "";
+        String lookupKey = null;
         String phoneNumber = null;
         String email = null;
         String name = null;
-        List<Contact> list = new LinkedList<>();
         do {
-            String currentLookupKey = cursor.getString(lookupColumnIndex);
-            if (!lookupKey.equals(currentLookupKey)) {
-                if (!lookupKey.isEmpty()) {
-                    if (name != null) {
-                        list.add(new Contact(name, phoneNumber, email, lookupKey));
-                    }
-                }
-                phoneNumber = null;
-                email = null;
-                name = null;
-                lookupKey = currentLookupKey;
-            }
-
+            lookupKey = cursor.getString(lookupColumnIndex);
             if (typeColumnIndex != -1) {
                 String mimeType = cursor.getString(typeColumnIndex);
                 if (mimeType.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
@@ -88,11 +84,9 @@ public class ContactListLoaderCallbacks implements LoaderManager.LoaderCallbacks
                 }
             }
         } while (cursor.moveToNext());
-        fragment.applyContacts(list);
+        getViewState().applyContact(new Contact(name, phoneNumber, email, lookupKey));
     }
 
     @Override
-    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-        Log.d(TAG, "onLoaderReset()");
-    }
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) { }
 }
