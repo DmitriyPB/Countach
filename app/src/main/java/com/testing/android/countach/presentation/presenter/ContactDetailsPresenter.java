@@ -39,36 +39,41 @@ final public class ContactDetailsPresenter extends MvpPresenter<ContactDetailsVi
                 null
         );
         if (cursor == null) return;
-        if (cursor.getCount() == 0) {
-            cursor.close();
-            return;
-        }
-
-        int phoneColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-        int emailColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS);
-        int nameColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Contactables.DISPLAY_NAME);
-        int lookupColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Contactables.LOOKUP_KEY);
-        int typeColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Contactables.MIMETYPE);
-
-        cursor.moveToFirst();
-
-        String lookupKey = null;
-        String phoneNumber = null;
-        String email = null;
-        String name = null;
-        do {
-            lookupKey = cursor.getString(lookupColumnIndex);
-            if (typeColumnIndex != -1) {
-                String mimeType = cursor.getString(typeColumnIndex);
-                if (mimeType.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
-                    phoneNumber = cursor.getString(phoneColumnIndex);
-                } else if (mimeType.equals(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)) {
-                    email = cursor.getString(emailColumnIndex);
-                } else if (mimeType.equals(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)) {
-                    name = cursor.getString(nameColumnIndex);
-                }
+        try {
+            if (cursor.getCount() == 0) {
+                return;
             }
-        } while (cursor.moveToNext());
-        getViewState().applyContact(new Contact(name, phoneNumber, email, lookupKey));
+
+            int phoneColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+            int emailColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS);
+            int nameColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Contactables.DISPLAY_NAME);
+            int lookupColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Contactables.LOOKUP_KEY);
+            int typeColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Contactables.MIMETYPE);
+
+            cursor.moveToFirst();
+
+            String lookupKey = null;
+            String phoneNumber = null;
+            String email = null;
+            String name = null;
+            do {
+                lookupKey = cursor.getString(lookupColumnIndex);
+                if (typeColumnIndex != -1) {
+                    String mimeType = cursor.getString(typeColumnIndex);
+                    if (mimeType.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
+                        phoneNumber = cursor.getString(phoneColumnIndex);
+                    } else if (mimeType.equals(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)) {
+                        email = cursor.getString(emailColumnIndex);
+                    } else if (mimeType.equals(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)) {
+                        name = cursor.getString(nameColumnIndex);
+                    }
+                }
+            } while (cursor.moveToNext());
+            getViewState().applyContact(new Contact(name, phoneNumber, email, lookupKey));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
+        }
     }
 }

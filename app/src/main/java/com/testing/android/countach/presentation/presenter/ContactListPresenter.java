@@ -34,50 +34,55 @@ final public class ContactListPresenter extends MvpPresenter<ContactListView> {
                 ContactsContract.CommonDataKinds.Contactables.DISPLAY_NAME_PRIMARY
         );
         if (cursor == null) return;
-        if (cursor.getCount() == 0) {
-            cursor.close();
-            return;
-        }
+        try {
+            if (cursor.getCount() == 0) {
+                return;
+            }
 
-        int phoneColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-        int emailColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS);
-        int nameColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Contactables.DISPLAY_NAME);
-        int lookupColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Contactables.LOOKUP_KEY);
-        int typeColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Contactables.MIMETYPE);
 
-        cursor.moveToFirst();
+            int phoneColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+            int emailColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS);
+            int nameColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Contactables.DISPLAY_NAME);
+            int lookupColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Contactables.LOOKUP_KEY);
+            int typeColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Contactables.MIMETYPE);
 
-        String lookupKey = "";
-        String phoneNumber = null;
-        String email = null;
-        String name = null;
-        List<Contact> list = new LinkedList<>();
-        do {
-            String currentLookupKey = cursor.getString(lookupColumnIndex);
-            if (!lookupKey.equals(currentLookupKey)) {
-                if (!lookupKey.isEmpty()) {
-                    if (name != null) {
-                        list.add(new Contact(name, phoneNumber, email, lookupKey));
+            cursor.moveToFirst();
+
+            String lookupKey = "";
+            String phoneNumber = null;
+            String email = null;
+            String name = null;
+            List<Contact> list = new LinkedList<>();
+            do {
+                String currentLookupKey = cursor.getString(lookupColumnIndex);
+                if (!lookupKey.equals(currentLookupKey)) {
+                    if (!lookupKey.isEmpty()) {
+                        if (name != null) {
+                            list.add(new Contact(name, phoneNumber, email, lookupKey));
+                        }
+                    }
+                    phoneNumber = null;
+                    email = null;
+                    name = null;
+                    lookupKey = currentLookupKey;
+                }
+
+                if (typeColumnIndex != -1) {
+                    String mimeType = cursor.getString(typeColumnIndex);
+                    if (mimeType.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
+                        phoneNumber = cursor.getString(phoneColumnIndex);
+                    } else if (mimeType.equals(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)) {
+                        email = cursor.getString(emailColumnIndex);
+                    } else if (mimeType.equals(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)) {
+                        name = cursor.getString(nameColumnIndex);
                     }
                 }
-                phoneNumber = null;
-                email = null;
-                name = null;
-                lookupKey = currentLookupKey;
-            }
-
-            if (typeColumnIndex != -1) {
-                String mimeType = cursor.getString(typeColumnIndex);
-                if (mimeType.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
-                    phoneNumber = cursor.getString(phoneColumnIndex);
-                } else if (mimeType.equals(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)) {
-                    email = cursor.getString(emailColumnIndex);
-                } else if (mimeType.equals(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)) {
-                    name = cursor.getString(nameColumnIndex);
-                }
-            }
-        } while (cursor.moveToNext());
-        cursor.close();
-        getViewState().applyContacts(list);
+            } while (cursor.moveToNext());
+            getViewState().applyContacts(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
+        }
     }
 }
