@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="horizontal">
+
+	<TableRow
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<android.support.v7.widget.AppCompatTextView
+			android:id="@+id/contact_name_caption"
+			style="@style/ContactItemCaption"
+			android:layout_width="100dp"
+			android:layout_height="wrap_content"
+			android:text="@string/contact_name" />
+
+		<android.support.v7.widget.AppCompatTextView
+			android:id="@+id/text_view_name"
+			style="@style/ContactItemValue"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			tools:text="Иван-лама" />
+	</TableRow>
+
+	<TableRow
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+		<android.support.v7.widget.AppCompatTextView
+			android:id="@+id/contact_email_caption"
+			style="@style/ContactItemCaption"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/contact_email" />
+
+		<android.support.v7.widget.AppCompatTextView
+			android:id="@+id/text_view_email"
+			style="@style/ContactItemValue"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			tools:text="jo@human.com" />
+	</TableRow>
+
+	<TableRow
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+		<android.support.v7.widget.AppCompatTextView
+			android:id="@+id/contact_phone_caption"
+			style="@style/ContactItemCaption"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/contact_phone" />
+
+		<android.support.v7.widget.AppCompatTextView
+			android:id="@+id/text_view_phone"
+			style="@style/ContactItemValue"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			tools:text="Капитана Америки, 6" />
+	</TableRow>
+
+</TableLayout>

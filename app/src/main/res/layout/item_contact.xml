@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical">
+
+	<TextView
+		android:id="@+id/text_view_contact_name"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="@dimen/margin_fat"
+		android:layout_marginLeft="@dimen/margin_fat"
+		android:layout_marginTop="@dimen/margin_regular"
+		android:layout_marginEnd="@dimen/margin_fat"
+		android:layout_marginRight="@dimen/margin_fat"
+		android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
+		tools:text="Имя человека" />
+
+	<TextView
+		android:id="@+id/text_view_contact_phone_number"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="@dimen/margin_fat"
+		android:layout_marginLeft="@dimen/margin_fat"
+		android:layout_marginEnd="@dimen/margin_fat"
+		android:layout_marginRight="@dimen/margin_fat"
+		android:layout_marginBottom="@dimen/margin_regular"
+		android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Subtitle"
+		tools:text="877778" />
+</LinearLayout>

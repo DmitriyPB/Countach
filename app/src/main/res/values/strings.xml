@@ -1,0 +1,7 @@
+<resources>
+	<string name="app_name">Countach</string>
+	<string name="contact_phone">Phone</string>
+	<string name="contact_email">Email</string>
+	<string name="contact_name">Name</string>
+	<string name="permission_denied_warning">Until you grant the permission, we cannot display the contacts</string>
+</resources>
