@@ -1,24 +1,21 @@
 package com.testing.android.countach.presentation.presenter;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.testing.android.countach.data.Contact;
 import com.testing.android.countach.presentation.view.ContactDetailsView;
+import com.testing.android.countach.ui.fragment.ContactDetailFragment;
 
 @InjectViewState
-public class ContactDetailsPresenter extends MvpPresenter<ContactDetailsView> implements LoaderManager.LoaderCallbacks<Cursor> {
+final public class ContactDetailsPresenter extends MvpPresenter<ContactDetailsView> {
 
     private static final String TAG = ContactDetailsPresenter.class.getSimpleName();
     private static final int CONTACT_DETAILS_LOADER = 1;
-    public static final String LOOKUP_KEY_KEY = "lookup_key_key";
     private static final String[] PROJECTION = {
             ContactsContract.CommonDataKinds.Contactables.LOOKUP_KEY,
             ContactsContract.CommonDataKinds.Contactables.MIMETYPE,
@@ -28,34 +25,22 @@ public class ContactDetailsPresenter extends MvpPresenter<ContactDetailsView> im
     };
     private static final String SELECTION = ContactsContract.Data.LOOKUP_KEY + " = ?";
     private String[] SELECTION_ARGS = {""};
-    private LoaderProvider loaderProvider;
 
-    public ContactDetailsPresenter(LoaderProvider loaderProvider) {
-        this.loaderProvider = loaderProvider;
-    }
 
-    public void loadContactDetails(Bundle arguments, LoaderManager loaderManager) {
-        loaderManager.initLoader(CONTACT_DETAILS_LOADER, arguments, this);
-    }
-
-    @NonNull
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, @Nullable Bundle bundle) {
-        if (bundle != null) {
-            SELECTION_ARGS[0] = bundle.getString(LOOKUP_KEY_KEY);
+    public void loadContactDetails(Bundle arguments, Context context) {
+        if (arguments != null) {
+            SELECTION_ARGS[0] = arguments.getString(ContactDetailFragment.LOOKUP_KEY_KEY);
         }
-        return loaderProvider.provideLoader(
+        Cursor cursor = context.getContentResolver().query(
                 ContactsContract.Data.CONTENT_URI,
                 PROJECTION,
                 SELECTION,
                 SELECTION_ARGS,
                 null
         );
-    }
-
-    @Override
-    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
+        if (cursor == null) return;
         if (cursor.getCount() == 0) {
+            cursor.close();
             return;
         }
 
@@ -86,7 +71,4 @@ public class ContactDetailsPresenter extends MvpPresenter<ContactDetailsView> im
         } while (cursor.moveToNext());
         getViewState().applyContact(new Contact(name, phoneNumber, email, lookupKey));
     }
-
-    @Override
-    public void onLoaderReset(@NonNull Loader<Cursor> loader) { }
 }

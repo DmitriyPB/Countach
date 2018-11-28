@@ -1,13 +1,8 @@
 package com.testing.android.countach.presentation.presenter;
 
+import android.content.Context;
 import android.database.Cursor;
-import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
@@ -17,10 +12,8 @@ import com.testing.android.countach.presentation.view.ContactListView;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.testing.android.countach.ui.fragment.ContactListFragment.CONTACTS_LOADER;
-
 @InjectViewState
-public class ContactListPresenter extends MvpPresenter<ContactListView> implements LoaderManager.LoaderCallbacks<Cursor> {
+final public class ContactListPresenter extends MvpPresenter<ContactListView> {
 
     private static final String TAG = ContactListPresenter.class.getSimpleName();
 
@@ -32,31 +25,17 @@ public class ContactListPresenter extends MvpPresenter<ContactListView> implemen
             ContactsContract.CommonDataKinds.Email.ADDRESS
     };
 
-    private LoaderProvider loaderProvider;
-
-    public ContactListPresenter(LoaderProvider loaderProvider) {
-        this.loaderProvider = loaderProvider;
-    }
-
-    public void loadContacts(LoaderManager loaderManager) {
-        loaderManager.initLoader(CONTACTS_LOADER, null, this);
-    }
-
-    @NonNull
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, @Nullable Bundle bundle) {
-        return loaderProvider.provideLoader(
+    public void loadContacts(Context context) {
+        Cursor cursor = context.getContentResolver().query(
                 ContactsContract.Data.CONTENT_URI,
                 PROJECTION,
                 null,
                 null,
                 ContactsContract.CommonDataKinds.Contactables.DISPLAY_NAME_PRIMARY
         );
-    }
-
-    @Override
-    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
+        if (cursor == null) return;
         if (cursor.getCount() == 0) {
+            cursor.close();
             return;
         }
 
@@ -98,9 +77,7 @@ public class ContactListPresenter extends MvpPresenter<ContactListView> implemen
                 }
             }
         } while (cursor.moveToNext());
+        cursor.close();
         getViewState().applyContacts(list);
     }
-
-    @Override
-    public void onLoaderReset(@NonNull Loader<Cursor> loader) { }
 }

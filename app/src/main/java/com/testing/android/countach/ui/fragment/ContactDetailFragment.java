@@ -2,15 +2,10 @@ package com.testing.android.countach.ui.fragment;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +14,13 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.testing.android.countach.R;
 import com.testing.android.countach.data.Contact;
 import com.testing.android.countach.presentation.presenter.ContactDetailsPresenter;
-import com.testing.android.countach.presentation.presenter.LoaderProvider;
 import com.testing.android.countach.presentation.view.ContactDetailsView;
 
-public class ContactDetailFragment extends MvpAppCompatFragment implements ContactDetailsView {
+final public class ContactDetailFragment extends MvpAppCompatFragment implements ContactDetailsView {
+    public static final String LOOKUP_KEY_KEY = "lookup_key_key";
     private static final int PERMISSIONS_REQUEST_READ_CONTACT_DETAIL = 101;
 
     private TextView textViewName;
@@ -36,26 +30,10 @@ public class ContactDetailFragment extends MvpAppCompatFragment implements Conta
     @InjectPresenter
     ContactDetailsPresenter presenter;
 
-    @ProvidePresenter
-    ContactDetailsPresenter providePresenter() {
-        return new ContactDetailsPresenter(new LoaderProvider() {
-            @Override
-            public Loader<Cursor> provideLoader(Uri contentUri, String[] PROJECTION, String selection, String[] selectionArgs, String sort) {
-                return new CursorLoader(
-                        requireContext(),
-                        contentUri,
-                        PROJECTION,
-                        selection,
-                        selectionArgs,
-                        sort);
-            }
-        });
-    }
-
     public static ContactDetailFragment newInstance(String lookupKey) {
         ContactDetailFragment fragment = new ContactDetailFragment();
         Bundle args = new Bundle();
-        args.putString(ContactDetailsPresenter.LOOKUP_KEY_KEY, lookupKey);
+        args.putString(LOOKUP_KEY_KEY, lookupKey);
         fragment.setArguments(args);
         return fragment;
     }
@@ -100,7 +78,7 @@ public class ContactDetailFragment extends MvpAppCompatFragment implements Conta
     }
 
     private void loadContactDetailsWithPermissionCheck(Bundle arguments) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && requireContext().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACT_DETAIL);
         } else {
             loadContactDetails(arguments);
@@ -108,7 +86,7 @@ public class ContactDetailFragment extends MvpAppCompatFragment implements Conta
     }
 
     private void loadContactDetails(Bundle arguments) {
-        presenter.loadContactDetails(arguments, LoaderManager.getInstance(this));
+        presenter.loadContactDetails(arguments, requireContext());
     }
 
     @Override

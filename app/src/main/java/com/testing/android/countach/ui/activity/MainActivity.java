@@ -11,7 +11,7 @@ import com.testing.android.countach.ui.adapters.ContactAdapter;
 import com.testing.android.countach.ui.fragment.ContactDetailFragment;
 import com.testing.android.countach.ui.fragment.ContactListFragment;
 
-public class MainActivity extends AppCompatActivity implements ContactAdapter.OnContactClickListener {
+final public class MainActivity extends AppCompatActivity implements ContactAdapter.OnContactClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 

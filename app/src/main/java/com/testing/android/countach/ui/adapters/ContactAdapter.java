@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.testing.android.countach.R;
 import com.testing.android.countach.data.Contact;
 
-public class ContactAdapter extends ListAdapter<Contact, ContactAdapter.ContactViewHolder> {
+final public class ContactAdapter extends ListAdapter<Contact, ContactAdapter.ContactViewHolder> {
 
     private OnContactClickListener clickListener;
 
