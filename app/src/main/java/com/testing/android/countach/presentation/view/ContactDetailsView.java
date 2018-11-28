@@ -7,5 +7,5 @@ import com.testing.android.countach.data.Contact;
 
 public interface ContactDetailsView extends MvpView {
     @StateStrategyType(SingleStateStrategy.class)
-    void applyContact(Contact contact);
+    void  applyContact(Contact contact);
 }
