@@ -3,14 +3,10 @@ package com.testing.android.countach.ui.fragment;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,11 +16,9 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.testing.android.countach.R;
 import com.testing.android.countach.data.Contact;
 import com.testing.android.countach.presentation.presenter.ContactListPresenter;
-import com.testing.android.countach.presentation.presenter.LoaderProvider;
 import com.testing.android.countach.presentation.view.ContactListView;
 import com.testing.android.countach.ui.adapters.ContactAdapter;
 
@@ -45,9 +39,13 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        loadContactsWithPermissionCheck();
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof ContactAdapter.OnContactClickListener) {
+            listener = (ContactAdapter.OnContactClickListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + " must implement OnContactClickListener");
+        }
     }
 
     @Nullable
@@ -66,9 +64,22 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        loadContactsWithPermissionCheck();
+    }
+
+
+    @Override
     public void onDestroyView() {
         contactAdapter = null;
         super.onDestroyView();
+    }
+
+    @Override
+    public void onDetach() {
+        listener = null;
+        super.onDetach();
     }
 
     @Override
@@ -80,22 +91,6 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
                 Toast.makeText(requireContext(), R.string.permission_denied_warning, Toast.LENGTH_LONG).show();
             }
         }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof ContactAdapter.OnContactClickListener) {
-            listener = (ContactAdapter.OnContactClickListener) context;
-        } else {
-            throw new ClassCastException(context.toString() + " must implement OnContactClickListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        listener = null;
-        super.onDetach();
     }
 
     private void loadContactsWithPermissionCheck() {
