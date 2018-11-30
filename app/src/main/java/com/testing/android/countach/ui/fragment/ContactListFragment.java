@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
 import com.testing.android.countach.data.Contact;
 import com.testing.android.countach.presentation.presenter.ContactListPresenter;
@@ -27,12 +29,17 @@ import java.util.List;
 final public class ContactListFragment extends MvpAppCompatFragment implements ContactListView {
 
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
-    public static final int CONTACTS_LOADER = 0;
     private ContactAdapter.OnContactClickListener listener;
     private ContactAdapter contactAdapter;
 
     @InjectPresenter
     ContactListPresenter presenter;
+
+    @ProvidePresenter
+    ContactListPresenter providePresenter() {
+        CountachApp app = CountachApp.get(requireContext());
+        return new ContactListPresenter(app.getRepository(), app.getExecutors());
+    }
 
     public static ContactListFragment newInstance() {
         return new ContactListFragment();
@@ -97,7 +104,7 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
         } else {
-            presenter.loadContacts(requireContext());
+            presenter.loadContacts();
         }
     }
 

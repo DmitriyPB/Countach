@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
 import com.testing.android.countach.data.Contact;
 import com.testing.android.countach.presentation.presenter.ContactDetailsPresenter;
@@ -29,6 +31,12 @@ final public class ContactDetailFragment extends MvpAppCompatFragment implements
 
     @InjectPresenter
     ContactDetailsPresenter presenter;
+
+    @ProvidePresenter
+    ContactDetailsPresenter providePresenter() {
+        CountachApp app = CountachApp.get(requireContext());
+        return new ContactDetailsPresenter(app.getRepository(), app.getExecutors());
+    }
 
     public static ContactDetailFragment newInstance(String lookupKey) {
         ContactDetailFragment fragment = new ContactDetailFragment();
@@ -55,7 +63,7 @@ final public class ContactDetailFragment extends MvpAppCompatFragment implements
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        loadContactDetailsWithPermissionCheck(getArguments());
+        loadContactDetailsWithPermissionCheck();
     }
 
     @Override
@@ -70,23 +78,31 @@ final public class ContactDetailFragment extends MvpAppCompatFragment implements
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_READ_CONTACT_DETAIL) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                loadContactDetails(getArguments());
+                loadContactDetails();
             } else {
                 Toast.makeText(requireContext(), R.string.permission_denied_warning, Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    private void loadContactDetailsWithPermissionCheck(Bundle arguments) {
+    private void loadContactDetailsWithPermissionCheck() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACT_DETAIL);
         } else {
-            loadContactDetails(arguments);
+            loadContactDetails();
         }
     }
 
-    private void loadContactDetails(Bundle arguments) {
-        presenter.loadContactDetails(arguments, requireContext());
+    private void loadContactDetails() {
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            String lookupKey = arguments.getString(ContactDetailFragment.LOOKUP_KEY_KEY);
+            if (lookupKey != null) {
+                presenter.loadContactDetails(lookupKey);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("lookup key not found");
     }
 
     @Override
