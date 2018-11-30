@@ -8,6 +8,7 @@ import com.testing.android.countach.data.Contact;
 import com.testing.android.countach.presentation.view.ContactListView;
 
 import java.util.List;
+import java.util.concurrent.Future;
 
 @InjectViewState
 final public class ContactListPresenter extends MvpPresenter<ContactListView> {
@@ -15,7 +16,8 @@ final public class ContactListPresenter extends MvpPresenter<ContactListView> {
     private static final String TAG = ContactListPresenter.class.getSimpleName();
 
     private final Repository repo;
-    private AppExecutors executors;
+    private final AppExecutors executors;
+    private Future<?> contactFuture;
 
     public ContactListPresenter(Repository repo, AppExecutors executors) {
         this.repo = repo;
@@ -23,11 +25,17 @@ final public class ContactListPresenter extends MvpPresenter<ContactListView> {
     }
 
     public void loadContacts() {
-        executors.worker().execute(() -> {
+        contactFuture = executors.worker().submit(() -> {
             final List<Contact> contactList = repo.getContactList();
             executors.ui().execute(() -> {
                 getViewState().applyContacts(contactList);
             });
         });
+    }
+
+    @Override
+    public void onDestroy() {
+        contactFuture.cancel(false);
+        super.onDestroy();
     }
 }

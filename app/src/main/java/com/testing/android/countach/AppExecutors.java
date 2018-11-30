@@ -5,14 +5,15 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 final public class AppExecutors {
 
-    private final Executor worker;
+    private final ExecutorService worker;
     private final Executor main;
 
-    public AppExecutors(Executor worker, Executor main) {
+    public AppExecutors(ExecutorService worker, Executor main) {
         this.worker = worker;
         this.main = main;
     }
@@ -21,7 +22,7 @@ final public class AppExecutors {
         this(Executors.newSingleThreadExecutor(), new MainThreadExecutor());
     }
 
-    public Executor worker() {
+    public ExecutorService worker() {
         return worker;
     }
 
