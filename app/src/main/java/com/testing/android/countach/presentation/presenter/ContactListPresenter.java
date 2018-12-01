@@ -35,7 +35,9 @@ final public class ContactListPresenter extends MvpPresenter<ContactListView> {
 
     @Override
     public void onDestroy() {
-        contactFuture.cancel(false);
+        if (contactFuture != null) {
+            contactFuture.cancel(false);
+        }
         super.onDestroy();
     }
 }
