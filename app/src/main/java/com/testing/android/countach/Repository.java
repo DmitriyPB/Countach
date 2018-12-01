@@ -27,16 +27,15 @@ final public class Repository {
     }
 
     public List<Contact> getContactList() {
-        Cursor cursor = appContext.getContentResolver().query(
+        try (Cursor cursor = appContext.getContentResolver().query(
                 ContactsContract.Data.CONTENT_URI,
                 PROJECTION_ALL_CONTACTS,
                 null,
                 null,
                 ContactsContract.CommonDataKinds.Contactables.DISPLAY_NAME_PRIMARY
-        );
+        )) {
 
-        if (cursor != null && cursor.getCount() > 0) {
-            try {
+            if (cursor != null && cursor.getCount() > 0) {
                 int phoneColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
                 int emailColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS);
                 int nameColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Contactables.DISPLAY_NAME);
@@ -76,11 +75,9 @@ final public class Repository {
                     }
                 } while (cursor.moveToNext());
                 return list;
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                cursor.close();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return Collections.emptyList();
     }
@@ -96,15 +93,14 @@ final public class Repository {
 
     public Contact getContactDetails(@NonNull String lookup) {
         String[] SELECTION_ARGS = {lookup};
-        Cursor cursor = appContext.getContentResolver().query(
+        try (Cursor cursor = appContext.getContentResolver().query(
                 ContactsContract.Data.CONTENT_URI,
                 PROJECTION_CONTACT_DETAILS,
                 SELECTION_CONTACT_DETAILS,
                 SELECTION_ARGS,
                 null
-        );
-        if (cursor != null && cursor.getCount() > 0) {
-            try {
+        )) {
+            if (cursor != null && cursor.getCount() > 0) {
                 int phoneColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
                 int emailColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS);
                 int nameColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Contactables.DISPLAY_NAME);
@@ -131,11 +127,9 @@ final public class Repository {
                     }
                 } while (cursor.moveToNext());
                 return new Contact(name, phoneNumber, email, lookupKey);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                cursor.close();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
