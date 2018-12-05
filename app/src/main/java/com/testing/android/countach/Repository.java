@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 
-import com.testing.android.countach.data.Contact;
+import com.testing.android.countach.domain.Contact;
 
 import java.util.Collections;
 import java.util.LinkedList;

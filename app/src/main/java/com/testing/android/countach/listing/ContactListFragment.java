@@ -1,4 +1,4 @@
-package com.testing.android.countach.ui.fragment;
+package com.testing.android.countach.listing;
 
 import android.Manifest;
 import android.content.Context;
@@ -19,18 +19,15 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
-import com.testing.android.countach.data.Contact;
-import com.testing.android.countach.presentation.presenter.ContactListPresenter;
-import com.testing.android.countach.presentation.view.ContactListView;
-import com.testing.android.countach.ui.adapters.ContactAdapter;
+import com.testing.android.countach.domain.Contact;
 
 import java.util.List;
 
 final public class ContactListFragment extends MvpAppCompatFragment implements ContactListView {
 
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
-    private ContactAdapter.OnContactClickListener listener;
-    private ContactAdapter contactAdapter;
+    private ContactListAdapter.OnContactClickListener listener;
+    private ContactListAdapter contactAdapter;
 
     @InjectPresenter
     ContactListPresenter presenter;
@@ -48,8 +45,8 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof ContactAdapter.OnContactClickListener) {
-            listener = (ContactAdapter.OnContactClickListener) context;
+        if (context instanceof ContactListAdapter.OnContactClickListener) {
+            listener = (ContactListAdapter.OnContactClickListener) context;
         } else {
             throw new ClassCastException(context.toString() + " must implement OnContactClickListener");
         }
@@ -66,7 +63,7 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
         super.onViewCreated(view, savedInstanceState);
         RecyclerView recyclerContactList = view.findViewById(R.id.recycler_view_contact_list);
         recyclerContactList.setLayoutManager(new LinearLayoutManager(requireContext()));
-        contactAdapter = new ContactAdapter(listener);
+        contactAdapter = new ContactListAdapter(listener);
         recyclerContactList.setAdapter(contactAdapter);
     }
 

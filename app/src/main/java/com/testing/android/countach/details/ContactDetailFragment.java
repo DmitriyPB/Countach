@@ -1,4 +1,4 @@
-package com.testing.android.countach.ui.fragment;
+package com.testing.android.countach.details;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -17,9 +17,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
-import com.testing.android.countach.data.Contact;
-import com.testing.android.countach.presentation.presenter.ContactDetailsPresenter;
-import com.testing.android.countach.presentation.view.ContactDetailsView;
+import com.testing.android.countach.domain.Contact;
 
 final public class ContactDetailFragment extends MvpAppCompatFragment implements ContactDetailsView {
     public static final String LOOKUP_KEY_KEY = "lookup_key_key";

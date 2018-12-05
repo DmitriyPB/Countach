@@ -1,4 +1,4 @@
-package com.testing.android.countach.presentation.presenter;
+package com.testing.android.countach.details;
 
 import android.support.annotation.NonNull;
 
@@ -6,8 +6,7 @@ import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.testing.android.countach.AppExecutors;
 import com.testing.android.countach.Repository;
-import com.testing.android.countach.data.Contact;
-import com.testing.android.countach.presentation.view.ContactDetailsView;
+import com.testing.android.countach.domain.Contact;
 
 import java.util.concurrent.Future;
 
