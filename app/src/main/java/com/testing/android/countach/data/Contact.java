@@ -1,6 +1,6 @@
 package com.testing.android.countach.data;
 
-public class Contact {
+final public class Contact {
     private final String name;
     private final String phoneNumber;
     private final String email;

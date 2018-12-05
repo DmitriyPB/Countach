@@ -1,14 +1,12 @@
-package com.testing.android.countach;
+package com.testing.android.countach.ui.fragment;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,28 +14,45 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.testing.android.countach.adapters.ContactAdapter;
+import com.arellomobile.mvp.MvpAppCompatFragment;
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.testing.android.countach.CountachApp;
+import com.testing.android.countach.R;
 import com.testing.android.countach.data.Contact;
+import com.testing.android.countach.presentation.presenter.ContactListPresenter;
+import com.testing.android.countach.presentation.view.ContactListView;
+import com.testing.android.countach.ui.adapters.ContactAdapter;
 
 import java.util.List;
 
-public class ContactListFragment extends Fragment {
+final public class ContactListFragment extends MvpAppCompatFragment implements ContactListView {
 
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
-    public static final int CONTACTS_LOADER = 0;
     private ContactAdapter.OnContactClickListener listener;
-    private ContactListLoaderCallbacks loaderCallbacks;
     private ContactAdapter contactAdapter;
+
+    @InjectPresenter
+    ContactListPresenter presenter;
+
+    @ProvidePresenter
+    ContactListPresenter providePresenter() {
+        CountachApp app = CountachApp.get(requireContext());
+        return new ContactListPresenter(app.getRepository(), app.getExecutors());
+    }
 
     public static ContactListFragment newInstance() {
         return new ContactListFragment();
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        loaderCallbacks = new ContactListLoaderCallbacks(this);
-        loadContactsWithPermissionCheck();
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof ContactAdapter.OnContactClickListener) {
+            listener = (ContactAdapter.OnContactClickListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + " must implement OnContactClickListener");
+        }
     }
 
     @Nullable
@@ -56,9 +71,22 @@ public class ContactListFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        loadContactsWithPermissionCheck();
+    }
+
+
+    @Override
     public void onDestroyView() {
         contactAdapter = null;
         super.onDestroyView();
+    }
+
+    @Override
+    public void onDetach() {
+        listener = null;
+        super.onDetach();
     }
 
     @Override
@@ -72,34 +100,15 @@ public class ContactListFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof ContactAdapter.OnContactClickListener) {
-            listener = (ContactAdapter.OnContactClickListener) context;
-        } else {
-            throw new ClassCastException(context.toString() + " must implement OnContactClickListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        listener = null;
-        super.onDetach();
-    }
-
     private void loadContactsWithPermissionCheck() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && requireContext().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
         } else {
-            loadContacts();
+            presenter.loadContacts();
         }
     }
 
-    private void loadContacts() {
-        LoaderManager.getInstance(this).initLoader(CONTACTS_LOADER, null, loaderCallbacks);
-    }
-
+    @Override
     public void applyContacts(List<Contact> list) {
         contactAdapter.submitList(list);
     }

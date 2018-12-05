@@ -1,34 +1,47 @@
-package com.testing.android.countach;
+package com.testing.android.countach.ui.fragment;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.arellomobile.mvp.MvpAppCompatFragment;
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.testing.android.countach.CountachApp;
+import com.testing.android.countach.R;
 import com.testing.android.countach.data.Contact;
+import com.testing.android.countach.presentation.presenter.ContactDetailsPresenter;
+import com.testing.android.countach.presentation.view.ContactDetailsView;
 
-public class ContactDetailFragment extends Fragment {
+final public class ContactDetailFragment extends MvpAppCompatFragment implements ContactDetailsView {
+    public static final String LOOKUP_KEY_KEY = "lookup_key_key";
     private static final int PERMISSIONS_REQUEST_READ_CONTACT_DETAIL = 101;
-    public static final int CONTACT_DETAILS_LOADER = 1;
+
     private TextView textViewName;
     private TextView textViewEmail;
     private TextView textViewPhone;
 
-    private ContactDetailsLoaderCallbacks loaderCallbacks;
+    @InjectPresenter
+    ContactDetailsPresenter presenter;
+
+    @ProvidePresenter
+    ContactDetailsPresenter providePresenter() {
+        CountachApp app = CountachApp.get(requireContext());
+        return new ContactDetailsPresenter(app.getRepository(), app.getExecutors());
+    }
 
     public static ContactDetailFragment newInstance(String lookupKey) {
         ContactDetailFragment fragment = new ContactDetailFragment();
         Bundle args = new Bundle();
-        args.putString(ContactDetailsLoaderCallbacks.LOOKUP_KEY_KEY, lookupKey);
+        args.putString(LOOKUP_KEY_KEY, lookupKey);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,8 +63,7 @@ public class ContactDetailFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        loaderCallbacks = new ContactDetailsLoaderCallbacks(this);
-        loadContactDetailsWithPermissionCheck(getArguments());
+        loadContactDetailsWithPermissionCheck();
     }
 
     @Override
@@ -66,25 +78,34 @@ public class ContactDetailFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_READ_CONTACT_DETAIL) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                loadContactDetails(getArguments());
+                loadContactDetails();
             } else {
                 Toast.makeText(requireContext(), R.string.permission_denied_warning, Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    private void loadContactDetailsWithPermissionCheck(Bundle arguments) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && requireContext().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+    private void loadContactDetailsWithPermissionCheck() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACT_DETAIL);
         } else {
-            loadContactDetails(arguments);
+            loadContactDetails();
         }
     }
 
-    private void loadContactDetails(Bundle arguments) {
-        LoaderManager.getInstance(this).initLoader(CONTACT_DETAILS_LOADER, arguments, loaderCallbacks);
+    private void loadContactDetails() {
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            String lookupKey = arguments.getString(ContactDetailFragment.LOOKUP_KEY_KEY);
+            if (lookupKey != null) {
+                presenter.loadContactDetails(lookupKey);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("lookup key not found");
     }
 
+    @Override
     public void applyContact(Contact contact) {
         textViewName.setText(contact.getName());
         textViewEmail.setText(contact.getEmail());
