@@ -26,6 +26,7 @@ final public class MainActivity extends AppCompatActivity implements ContactList
     private void initContactListFragment() {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, ContactListFragment.newInstance());
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 

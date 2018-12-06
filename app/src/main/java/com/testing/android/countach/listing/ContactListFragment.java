@@ -12,6 +12,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +28,14 @@ import com.testing.android.countach.domain.Contact;
 
 import java.util.List;
 
+
 final public class ContactListFragment extends MvpAppCompatFragment implements ContactListView {
 
+    private static final String TAG = ContactListFragment.class.getSimpleName();
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     private ContactListAdapter.OnContactClickListener listener;
     private ContactListAdapter contactAdapter;
+    private SearchView searchView;
 
     @InjectPresenter
     ContactListPresenter presenter;
@@ -64,6 +69,21 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        searchView = view.findViewById(R.id.search_view_contact_list);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                Log.d(TAG, "onQueryTextSubmit() : " + s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                Log.d(TAG, "onQueryTextChange() : " + s);
+                loadContactsWithPermissionCheck();
+                return true;
+            }
+        });
         RecyclerView recyclerContactList = view.findViewById(R.id.recycler_view_contact_list);
         recyclerContactList.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerContactList.addItemDecoration(new ContactDecoration(requireContext()));
@@ -72,15 +92,9 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        loadContactsWithPermissionCheck();
-    }
-
-
-    @Override
     public void onDestroyView() {
         contactAdapter = null;
+        searchView = null;
         super.onDestroyView();
     }
 
@@ -101,11 +115,16 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
         }
     }
 
-    private void loadContactsWithPermissionCheck() {
+    @Override
+    public void loadContactsWithPermissionCheck() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
         } else {
-            presenter.loadContacts();
+            if (searchView != null) {
+                CharSequence raw = searchView.getQuery();
+                String query = raw != null ? raw.toString() : null;
+                presenter.loadContacts(query);
+            }
         }
     }
 
