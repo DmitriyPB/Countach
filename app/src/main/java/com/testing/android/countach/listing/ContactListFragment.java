@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
@@ -36,6 +37,8 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
     private ContactListAdapter.OnContactClickListener listener;
     private ContactListAdapter contactAdapter;
     private SearchView searchView;
+    private ProgressBar progressBar;
+    private RecyclerView recycler;
 
     @InjectPresenter
     ContactListPresenter presenter;
@@ -43,7 +46,7 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
     @ProvidePresenter
     ContactListPresenter providePresenter() {
         CountachApp app = CountachApp.get(requireContext());
-        return new ContactListPresenter(app.getRepository(), app.getExecutors());
+        return new ContactListPresenter(app.getRepository());
     }
 
     public static ContactListFragment newInstance() {
@@ -69,6 +72,7 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        progressBar = view.findViewById(R.id.progress_bar_contact_list);
         searchView = view.findViewById(R.id.search_view_contact_list);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -84,17 +88,19 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
                 return true;
             }
         });
-        RecyclerView recyclerContactList = view.findViewById(R.id.recycler_view_contact_list);
-        recyclerContactList.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerContactList.addItemDecoration(new ContactDecoration(requireContext()));
+        recycler = view.findViewById(R.id.recycler_view_contact_list);
+        recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recycler.addItemDecoration(new ContactDecoration(requireContext()));
         contactAdapter = new ContactListAdapter(listener);
-        recyclerContactList.setAdapter(contactAdapter);
+        recycler.setAdapter(contactAdapter);
     }
 
     @Override
     public void onDestroyView() {
         contactAdapter = null;
         searchView = null;
+        progressBar = null;
+        recycler = null;
         super.onDestroyView();
     }
 
@@ -126,6 +132,12 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
                 presenter.loadContacts(query);
             }
         }
+    }
+
+    @Override
+    public void showLoadingIndicator(boolean show) {
+        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        recycler.setVisibility(!show ? View.VISIBLE : View.GONE);
     }
 
     @Override

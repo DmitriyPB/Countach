@@ -4,38 +4,46 @@ import android.support.annotation.NonNull;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
-import com.testing.android.countach.AppExecutors;
 import com.testing.android.countach.Repository;
 import com.testing.android.countach.domain.Contact;
 
-import java.util.concurrent.Future;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 @InjectViewState
 final public class ContactDetailsPresenter extends MvpPresenter<ContactDetailsView> {
 
     private static final String TAG = ContactDetailsPresenter.class.getSimpleName();
     private final Repository repo;
-    private final AppExecutors executors;
-    private Future<?> contactListFuture;
+    private Disposable subscriptionContact;
 
-    public ContactDetailsPresenter(Repository repo, AppExecutors executors) {
+    ContactDetailsPresenter(Repository repo) {
         this.repo = repo;
-        this.executors = executors;
     }
 
-    public void loadContactDetails(@NonNull String lookupKey) {
-        contactListFuture = executors.worker().submit(() -> {
-            Contact contactDetails = repo.getContactDetails(lookupKey);
-            executors.ui().execute(() -> {
-                getViewState().applyContact(contactDetails);
-            });
-        });
+    void loadContactDetails(@NonNull String lookupKey) {
+        subscriptionContact = Single.fromCallable(() -> repo.getContactDetails(lookupKey))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(__ -> getViewState().showLoadingIndicator(true))
+                .doAfterTerminate(() -> getViewState().showLoadingIndicator(false))
+                .subscribe(this::onGetContactSuccess, this::onGetContactFailure);
+    }
+
+    private void onGetContactFailure(Throwable throwable) {
+        throwable.printStackTrace();
+    }
+
+    private void onGetContactSuccess(Contact contactDetails) {
+        getViewState().applyContact(contactDetails);
     }
 
     @Override
     public void onDestroy() {
-        if (contactListFuture != null) {
-            contactListFuture.cancel(false);
+        if (subscriptionContact != null) {
+            subscriptionContact.dispose();
         }
         super.onDestroy();
     }

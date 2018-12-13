@@ -13,6 +13,15 @@
 		android:imeOptions="actionSearch|flagNoExtractUi|flagNoFullscreen"
 		app:queryHint="@string/contact_list_search_hint" />
 
+	<ProgressBar
+		android:id="@+id/progress_bar_contact_list"
+		style="?android:progressBarStyle"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_gravity="center"
+		android:indeterminate="true"
+		tools:visibility="gone" />
+
 	<android.support.v7.widget.RecyclerView
 		android:id="@+id/recycler_view_contact_list"
 		android:layout_width="match_parent"
