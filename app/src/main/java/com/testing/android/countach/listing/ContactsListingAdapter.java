@@ -12,11 +12,11 @@ import android.widget.TextView;
 import com.testing.android.countach.R;
 import com.testing.android.countach.domain.Contact;
 
-final public class ContactListAdapter extends ListAdapter<Contact, ContactListAdapter.ContactViewHolder> {
+final public class ContactsListingAdapter extends ListAdapter<Contact, ContactsListingAdapter.ContactViewHolder> {
 
     private OnContactClickListener clickListener;
 
-    public ContactListAdapter(OnContactClickListener clickListener) {
+    public ContactsListingAdapter(OnContactClickListener clickListener) {
         super(new ContactItemDiffCallback());
         this.clickListener = clickListener;
     }
@@ -53,12 +53,9 @@ final public class ContactListAdapter extends ListAdapter<Contact, ContactListAd
             super(itemView);
             textViewContactName = itemView.findViewById(R.id.text_view_contact_name);
             textViewContactPhoneNumber = itemView.findViewById(R.id.text_view_contact_phone_number);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (clickListener != null) {
-                        clickListener.onContactClicked(contact);
-                    }
+            itemView.setOnClickListener(v -> {
+                if (clickListener != null) {
+                    clickListener.onContactClicked(contact);
                 }
             });
         }

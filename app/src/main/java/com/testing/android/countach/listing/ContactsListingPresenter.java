@@ -4,7 +4,7 @@ import android.support.annotation.Nullable;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
-import com.testing.android.countach.Repository;
+import com.testing.android.countach.IRepository;
 import com.testing.android.countach.domain.Contact;
 
 import java.util.List;
@@ -14,14 +14,14 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 @InjectViewState
-final public class ContactListPresenter extends MvpPresenter<ContactListView> {
+final public class ContactsListingPresenter extends MvpPresenter<ContactsListingView> {
 
-    private static final String TAG = ContactListPresenter.class.getSimpleName();
+    private static final String TAG = ContactsListingPresenter.class.getSimpleName();
 
-    private final Repository repo;
+    private final IRepository repo;
     private Disposable subscriptionContactList;
 
-    ContactListPresenter(Repository repo) {
+    ContactsListingPresenter(IRepository repo) {
         this.repo = repo;
         getViewState().loadContactsWithPermissionCheck();
     }

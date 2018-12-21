@@ -14,7 +14,7 @@ import java.util.List;
 
 import io.reactivex.Single;
 
-final public class Repository {
+final public class Repository implements IRepository{
 
     private Context appContext;
     private static final String[] PROJECTION_ALL_CONTACTS = {
@@ -28,6 +28,7 @@ final public class Repository {
     Repository(Context appContext) {
         this.appContext = appContext;
     }
+
 
     public Single<List<Contact>> getContactList(@Nullable String likeName) {
         return Single.fromCallable(() -> {

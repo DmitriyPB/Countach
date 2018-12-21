@@ -7,7 +7,7 @@ import com.testing.android.countach.domain.Contact;
 
 import java.util.List;
 
-public interface ContactListView extends MvpView {
+public interface ContactsListingView extends MvpView {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void applyContacts(List<Contact> list);
 
