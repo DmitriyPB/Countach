@@ -1,18 +1,14 @@
 package com.testing.android.countach;
 
-import android.content.Context;
-
 import javax.inject.Singleton;
 
+import dagger.Binds;
 import dagger.Module;
-import dagger.Provides;
 
 @Module
-final class DataModule {
+abstract class DataModule {
 
-    @Provides
+    @Binds
     @Singleton
-    IRepository provideRepo(Context context) {
-        return new Repository(context);
-    }
+    abstract Repository provideRepo(RepositoryImpl repository);
 }

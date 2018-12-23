@@ -2,9 +2,7 @@ package com.testing.android.countach;
 
 
 import com.testing.android.countach.details.ContactDetailsComponent;
-import com.testing.android.countach.details.ContactDetailsModule;
 import com.testing.android.countach.listing.ContactsListingComponent;
-import com.testing.android.countach.listing.ContactsListingModule;
 
 import javax.inject.Singleton;
 
@@ -17,7 +15,7 @@ import dagger.Component;
         DataModule.class
 })
 public interface AppComponent {
-    ContactDetailsComponent plus(ContactDetailsModule contactDetailsModule);
+    ContactDetailsComponent plusContactDetailsComponent();
 
-    ContactsListingComponent plus(ContactsListingModule contactsListingModule);
+    ContactsListingComponent plusContactsListingComponent();
 }

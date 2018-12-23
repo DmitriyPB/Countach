@@ -61,7 +61,7 @@ final public class ContactsListingFragment extends MvpAppCompatFragment implemen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         CountachApp app = CountachApp.get(requireContext());
-        app.getAppComponent().plus(new ContactsListingModule()).inject(this);
+        app.getAppComponent().plusContactsListingComponent().inject(this);
         super.onCreate(savedInstanceState);
     }
 

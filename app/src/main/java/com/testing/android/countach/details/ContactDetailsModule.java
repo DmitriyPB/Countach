@@ -1,16 +1,13 @@
 package com.testing.android.countach.details;
 
-import com.testing.android.countach.IRepository;
-
+import dagger.Binds;
 import dagger.Module;
-import dagger.Provides;
 
 @Module
-final public class ContactDetailsModule {
+public interface ContactDetailsModule {
 
-    @Provides
+    @Binds
     @ContactDetailsScope
-    ContactDetailsPresenter providePresenter(IRepository repo) {
-        return new ContactDetailsPresenter(repo);
-    }
+    ContactDetailsPresenter providePresenter(ContactDetailsPresenterImpl presenter);
 }
+

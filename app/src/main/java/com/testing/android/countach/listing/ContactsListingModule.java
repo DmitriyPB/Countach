@@ -1,16 +1,12 @@
 package com.testing.android.countach.listing;
 
-import com.testing.android.countach.IRepository;
-
+import dagger.Binds;
 import dagger.Module;
-import dagger.Provides;
 
 @Module
-final public class ContactsListingModule {
+public interface ContactsListingModule {
 
-    @Provides
+    @Binds
     @ContactsListingScope
-    ContactsListingPresenter providePresenter(IRepository repo) {
-        return new ContactsListingPresenter(repo);
-    }
+    ContactsListingPresenter providePresenter(ContactsListingPresenterImpl presenter);
 }

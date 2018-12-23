@@ -55,7 +55,7 @@ final public class ContactDetailsFragment extends MvpAppCompatFragment implement
     @Override
     public void onCreate(Bundle savedInstanceState) {
         CountachApp app = CountachApp.get(requireContext());
-        app.getAppComponent().plus(new ContactDetailsModule()).inject(this);
+        app.getAppComponent().plusContactDetailsComponent().inject(this);
         super.onCreate(savedInstanceState);
     }
 
