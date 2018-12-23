@@ -62,4 +62,12 @@
 			tools:text="Капитана Америки, 6" />
 	</TableRow>
 
+	<ProgressBar
+		android:id="@+id/progress_bar_contact_details"
+		style="?android:progressBarStyle"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_gravity="center"
+		android:indeterminate="true"
+		tools:visibility="gone" />
 </TableLayout>

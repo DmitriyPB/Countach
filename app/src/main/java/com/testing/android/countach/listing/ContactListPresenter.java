@@ -1,16 +1,17 @@
 package com.testing.android.countach.listing;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
-import com.testing.android.countach.AppExecutors;
 import com.testing.android.countach.Repository;
 import com.testing.android.countach.domain.Contact;
 
 import java.util.List;
-import java.util.concurrent.Future;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 @InjectViewState
 final public class ContactListPresenter extends MvpPresenter<ContactListView> {
@@ -18,29 +19,40 @@ final public class ContactListPresenter extends MvpPresenter<ContactListView> {
     private static final String TAG = ContactListPresenter.class.getSimpleName();
 
     private final Repository repo;
-    private final AppExecutors executors;
-    private Future<?> contactFuture;
+    private Disposable subscriptionContactList;
 
-    ContactListPresenter(Repository repo, AppExecutors executors) {
+    ContactListPresenter(Repository repo) {
         this.repo = repo;
-        this.executors = executors;
         getViewState().loadContactsWithPermissionCheck();
     }
 
     void loadContacts(@Nullable String query) {
-        contactFuture = executors.worker().submit(() -> {
-            final List<Contact> contactList = repo.getContactList(query);
-            executors.ui().execute(() -> {
-                getViewState().applyContacts(contactList);
-            });
-        });
+        disposeContactsSubscriptionSafely();
+        subscriptionContactList = repo.getContactList(query)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(__ -> getViewState().showLoadingIndicator(true))
+                .doAfterTerminate(() -> getViewState().showLoadingIndicator(false))
+                .subscribe(this::onGetContactsSuccess, this::onGetContactsFailure);
+    }
+
+    private void disposeContactsSubscriptionSafely() {
+        if (subscriptionContactList != null && !subscriptionContactList.isDisposed()) {
+            subscriptionContactList.dispose();
+        }
+    }
+
+    private void onGetContactsFailure(Throwable error) {
+        error.printStackTrace();
+    }
+
+    private void onGetContactsSuccess(List<Contact> contacts) {
+        getViewState().applyContacts(contacts);
     }
 
     @Override
     public void onDestroy() {
-        if (contactFuture != null) {
-            contactFuture.cancel(false);
-        }
+        disposeContactsSubscriptionSafely();
         super.onDestroy();
     }
 }

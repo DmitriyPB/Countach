@@ -13,4 +13,7 @@ public interface ContactListView extends MvpView {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void loadContactsWithPermissionCheck();
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void showLoadingIndicator(boolean show);
 }

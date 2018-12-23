@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,12 +21,14 @@ import com.testing.android.countach.R;
 import com.testing.android.countach.domain.Contact;
 
 final public class ContactDetailFragment extends MvpAppCompatFragment implements ContactDetailsView {
+    private static final String TAG = ContactDetailFragment.class.getSimpleName();
     public static final String LOOKUP_KEY_KEY = "lookup_key_key";
     private static final int PERMISSIONS_REQUEST_READ_CONTACT_DETAIL = 101;
 
     private TextView textViewName;
     private TextView textViewEmail;
     private TextView textViewPhone;
+    private ProgressBar progressBar;
 
     @InjectPresenter
     ContactDetailsPresenter presenter;
@@ -33,7 +36,7 @@ final public class ContactDetailFragment extends MvpAppCompatFragment implements
     @ProvidePresenter
     ContactDetailsPresenter providePresenter() {
         CountachApp app = CountachApp.get(requireContext());
-        return new ContactDetailsPresenter(app.getRepository(), app.getExecutors());
+        return new ContactDetailsPresenter(app.getRepository());
     }
 
     public static ContactDetailFragment newInstance(String lookupKey) {
@@ -56,6 +59,7 @@ final public class ContactDetailFragment extends MvpAppCompatFragment implements
         textViewName = root.findViewById(R.id.text_view_name);
         textViewEmail = root.findViewById(R.id.text_view_email);
         textViewPhone = root.findViewById(R.id.text_view_phone);
+        progressBar = root.findViewById(R.id.progress_bar_contact_details);
     }
 
     @Override
@@ -69,6 +73,7 @@ final public class ContactDetailFragment extends MvpAppCompatFragment implements
         textViewName = null;
         textViewEmail = null;
         textViewPhone = null;
+        progressBar = null;
         super.onDestroyView();
     }
 
@@ -108,5 +113,10 @@ final public class ContactDetailFragment extends MvpAppCompatFragment implements
         textViewName.setText(contact.getName());
         textViewEmail.setText(contact.getEmail());
         textViewPhone.setText(contact.getPhoneNumber());
+    }
+
+    @Override
+    public void showLoadingIndicator(boolean show) {
+        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }
