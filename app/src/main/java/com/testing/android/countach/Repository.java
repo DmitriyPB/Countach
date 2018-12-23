@@ -4,8 +4,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import com.testing.android.countach.data.Contact;
+import com.testing.android.countach.domain.Contact;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -26,12 +27,18 @@ final public class Repository {
         this.appContext = appContext;
     }
 
-    public List<Contact> getContactList() {
+    public List<Contact> getContactList(@Nullable String likeName) {
+        String SELECTION_CONTACT_LIST = null;
+        String[] SELECTION_ARGS = null;
+        if (likeName != null && !likeName.isEmpty()) {
+            SELECTION_CONTACT_LIST = ContactsContract.CommonDataKinds.Contactables.DISPLAY_NAME_PRIMARY + " LIKE ?";
+            SELECTION_ARGS = new String[]{"%" + likeName + "%"};
+        }
         try (Cursor cursor = appContext.getContentResolver().query(
                 ContactsContract.Data.CONTENT_URI,
                 PROJECTION_ALL_CONTACTS,
-                null,
-                null,
+                SELECTION_CONTACT_LIST,
+                SELECTION_ARGS,
                 ContactsContract.CommonDataKinds.Contactables.DISPLAY_NAME_PRIMARY
         )) {
 

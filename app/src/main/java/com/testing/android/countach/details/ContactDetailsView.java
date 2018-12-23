@@ -1,13 +1,11 @@
-package com.testing.android.countach.presentation.view;
+package com.testing.android.countach.details;
 
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
-import com.testing.android.countach.data.Contact;
+import com.testing.android.countach.domain.Contact;
 
-import java.util.List;
-
-public interface ContactListView extends MvpView {
+public interface ContactDetailsView extends MvpView {
     @StateStrategyType(SingleStateStrategy.class)
-    void applyContacts(List<Contact> list);
+    void applyContact(Contact contact);
 }

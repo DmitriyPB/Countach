@@ -1,4 +1,4 @@
-package com.testing.android.countach.ui.adapters;
+package com.testing.android.countach.listing;
 
 import android.support.annotation.NonNull;
 import android.support.v7.recyclerview.extensions.ListAdapter;
@@ -10,13 +10,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.testing.android.countach.R;
-import com.testing.android.countach.data.Contact;
+import com.testing.android.countach.domain.Contact;
 
-final public class ContactAdapter extends ListAdapter<Contact, ContactAdapter.ContactViewHolder> {
+final public class ContactListAdapter extends ListAdapter<Contact, ContactListAdapter.ContactViewHolder> {
 
     private OnContactClickListener clickListener;
 
-    public ContactAdapter(OnContactClickListener clickListener) {
+    public ContactListAdapter(OnContactClickListener clickListener) {
         super(new ContactItemDiffCallback());
         this.clickListener = clickListener;
     }

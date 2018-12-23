@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	xmlns:tools="http://schemas.android.com/tools">
+	android:orientation="vertical">
+
+	<android.support.v7.widget.SearchView
+		android:id="@+id/search_view_contact_list"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:imeOptions="actionSearch|flagNoExtractUi|flagNoFullscreen"
+		app:queryHint="@string/contact_list_search_hint" />
 
 	<android.support.v7.widget.RecyclerView
 		android:id="@+id/recycler_view_contact_list"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		tools:listitem ="@layout/item_contact"/>
-</FrameLayout>
+		tools:listitem="@layout/item_contact" />
+</LinearLayout>

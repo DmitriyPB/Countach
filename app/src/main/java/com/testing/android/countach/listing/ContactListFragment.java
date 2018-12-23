@@ -1,14 +1,19 @@
-package com.testing.android.countach.ui.fragment;
+package com.testing.android.countach.listing;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,18 +24,18 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
-import com.testing.android.countach.data.Contact;
-import com.testing.android.countach.presentation.presenter.ContactListPresenter;
-import com.testing.android.countach.presentation.view.ContactListView;
-import com.testing.android.countach.ui.adapters.ContactAdapter;
+import com.testing.android.countach.domain.Contact;
 
 import java.util.List;
 
+
 final public class ContactListFragment extends MvpAppCompatFragment implements ContactListView {
 
+    private static final String TAG = ContactListFragment.class.getSimpleName();
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
-    private ContactAdapter.OnContactClickListener listener;
-    private ContactAdapter contactAdapter;
+    private ContactListAdapter.OnContactClickListener listener;
+    private ContactListAdapter contactAdapter;
+    private SearchView searchView;
 
     @InjectPresenter
     ContactListPresenter presenter;
@@ -48,8 +53,8 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof ContactAdapter.OnContactClickListener) {
-            listener = (ContactAdapter.OnContactClickListener) context;
+        if (context instanceof ContactListAdapter.OnContactClickListener) {
+            listener = (ContactListAdapter.OnContactClickListener) context;
         } else {
             throw new ClassCastException(context.toString() + " must implement OnContactClickListener");
         }
@@ -64,22 +69,32 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        searchView = view.findViewById(R.id.search_view_contact_list);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                Log.d(TAG, "onQueryTextSubmit() : " + s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                Log.d(TAG, "onQueryTextChange() : " + s);
+                loadContactsWithPermissionCheck();
+                return true;
+            }
+        });
         RecyclerView recyclerContactList = view.findViewById(R.id.recycler_view_contact_list);
         recyclerContactList.setLayoutManager(new LinearLayoutManager(requireContext()));
-        contactAdapter = new ContactAdapter(listener);
+        recyclerContactList.addItemDecoration(new ContactDecoration(requireContext()));
+        contactAdapter = new ContactListAdapter(listener);
         recyclerContactList.setAdapter(contactAdapter);
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        loadContactsWithPermissionCheck();
-    }
-
-
-    @Override
     public void onDestroyView() {
         contactAdapter = null;
+        searchView = null;
         super.onDestroyView();
     }
 
@@ -100,11 +115,16 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
         }
     }
 
-    private void loadContactsWithPermissionCheck() {
+    @Override
+    public void loadContactsWithPermissionCheck() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
         } else {
-            presenter.loadContacts();
+            if (searchView != null) {
+                CharSequence raw = searchView.getQuery();
+                String query = raw != null ? raw.toString() : null;
+                presenter.loadContacts(query);
+            }
         }
     }
 
@@ -113,4 +133,40 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
         contactAdapter.submitList(list);
     }
 
+    private static class ContactDecoration extends RecyclerView.ItemDecoration {
+        private Drawable divider;
+        private final Rect bounds = new Rect();
+
+        ContactDecoration(Context context) {
+            this.divider = ContextCompat.getDrawable(context, R.drawable.divider_contact);
+        }
+
+        @Override
+        public void onDraw(@NonNull Canvas canvas, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+            canvas.save();
+            int left;
+            int right;
+            if (parent.getClipToPadding()) {
+                left = parent.getPaddingLeft();
+                right = parent.getWidth() - parent.getPaddingRight();
+                canvas.clipRect(left, parent.getPaddingTop(), right, parent.getHeight() - parent.getPaddingBottom());
+            } else {
+                left = 0;
+                right = parent.getWidth();
+            }
+
+            int childCount = parent.getChildCount();
+
+            for (int i = 0; i < childCount; ++i) {
+                View child = parent.getChildAt(i);
+                parent.getDecoratedBoundsWithMargins(child, this.bounds);
+                int bottom = this.bounds.bottom + Math.round(child.getTranslationY());
+                int top = bottom - this.divider.getIntrinsicHeight();
+                this.divider.setBounds(left, top, right, bottom);
+                this.divider.draw(canvas);
+            }
+
+            canvas.restore();
+        }
+    }
 }
