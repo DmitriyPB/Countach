@@ -9,7 +9,6 @@ import com.testing.android.countach.domain.Contact;
 
 import java.util.List;
 
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -28,7 +27,10 @@ final public class ContactListPresenter extends MvpPresenter<ContactListView> {
     }
 
     void loadContacts(@Nullable String query) {
-        subscriptionContactList = Single.fromCallable(() -> repo.getContactList(query))
+        if (subscriptionContactList != null) {
+            subscriptionContactList.dispose();
+        }
+        subscriptionContactList = repo.getContactList(query)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(__ -> getViewState().showLoadingIndicator(true))
@@ -46,7 +48,7 @@ final public class ContactListPresenter extends MvpPresenter<ContactListView> {
 
     @Override
     public void onDestroy() {
-        if (subscriptionContactList != null) {
+        if (subscriptionContactList != null && !subscriptionContactList.isDisposed()) {
             subscriptionContactList.dispose();
         }
         super.onDestroy();

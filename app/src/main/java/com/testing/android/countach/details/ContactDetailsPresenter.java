@@ -7,7 +7,6 @@ import com.arellomobile.mvp.MvpPresenter;
 import com.testing.android.countach.Repository;
 import com.testing.android.countach.domain.Contact;
 
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -24,7 +23,10 @@ final public class ContactDetailsPresenter extends MvpPresenter<ContactDetailsVi
     }
 
     void loadContactDetails(@NonNull String lookupKey) {
-        subscriptionContact = Single.fromCallable(() -> repo.getContactDetails(lookupKey))
+        if (subscriptionContact != null) {
+            subscriptionContact.dispose();
+        }
+        subscriptionContact = repo.getContactDetails(lookupKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(__ -> getViewState().showLoadingIndicator(true))
@@ -42,7 +44,7 @@ final public class ContactDetailsPresenter extends MvpPresenter<ContactDetailsVi
 
     @Override
     public void onDestroy() {
-        if (subscriptionContact != null) {
+        if (subscriptionContact != null && !subscriptionContact.isDisposed()) {
             subscriptionContact.dispose();
         }
         super.onDestroy();
