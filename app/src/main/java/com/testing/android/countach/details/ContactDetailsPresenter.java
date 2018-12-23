@@ -23,15 +23,19 @@ final public class ContactDetailsPresenter extends MvpPresenter<ContactDetailsVi
     }
 
     void loadContactDetails(@NonNull String lookupKey) {
-        if (subscriptionContact != null) {
-            subscriptionContact.dispose();
-        }
+        disposeDetailsSubscriptionSafely();
         subscriptionContact = repo.getContactDetails(lookupKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(__ -> getViewState().showLoadingIndicator(true))
                 .doAfterTerminate(() -> getViewState().showLoadingIndicator(false))
                 .subscribe(this::onGetContactSuccess, this::onGetContactFailure);
+    }
+
+    private void disposeDetailsSubscriptionSafely() {
+        if (subscriptionContact != null && !subscriptionContact.isDisposed()) {
+            subscriptionContact.dispose();
+        }
     }
 
     private void onGetContactFailure(Throwable throwable) {
@@ -44,9 +48,7 @@ final public class ContactDetailsPresenter extends MvpPresenter<ContactDetailsVi
 
     @Override
     public void onDestroy() {
-        if (subscriptionContact != null && !subscriptionContact.isDisposed()) {
-            subscriptionContact.dispose();
-        }
+        disposeDetailsSubscriptionSafely();
         super.onDestroy();
     }
 }
