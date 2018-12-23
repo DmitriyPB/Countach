@@ -6,11 +6,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.testing.android.countach.domain.Contact;
-import com.testing.android.countach.listing.ContactListAdapter;
-import com.testing.android.countach.details.ContactDetailFragment;
-import com.testing.android.countach.listing.ContactListFragment;
+import com.testing.android.countach.listing.ContactsListingAdapter;
+import com.testing.android.countach.details.ContactDetailsFragment;
+import com.testing.android.countach.listing.ContactsListingFragment;
 
-final public class MainActivity extends AppCompatActivity implements ContactListAdapter.OnContactClickListener {
+final public class MainActivity extends AppCompatActivity implements ContactsListingAdapter.OnContactClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -25,7 +25,7 @@ final public class MainActivity extends AppCompatActivity implements ContactList
 
     private void initContactListFragment() {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, ContactListFragment.newInstance());
+        fragmentTransaction.replace(R.id.fragment_container, ContactsListingFragment.newInstance());
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
@@ -33,7 +33,7 @@ final public class MainActivity extends AppCompatActivity implements ContactList
     @Override
     public void onContactClicked(Contact contact) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, ContactDetailFragment.newInstance(contact.getLookup()));
+        fragmentTransaction.replace(R.id.fragment_container, ContactDetailsFragment.newInstance(contact.getLookup()));
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }

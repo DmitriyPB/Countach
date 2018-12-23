@@ -3,29 +3,32 @@ package com.testing.android.countach.listing;
 import android.support.annotation.Nullable;
 
 import com.arellomobile.mvp.InjectViewState;
-import com.arellomobile.mvp.MvpPresenter;
 import com.testing.android.countach.Repository;
 import com.testing.android.countach.domain.Contact;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 @InjectViewState
-final public class ContactListPresenter extends MvpPresenter<ContactListView> {
+final public class ContactsListingPresenterImpl extends ContactsListingPresenter {
 
-    private static final String TAG = ContactListPresenter.class.getSimpleName();
+    private static final String TAG = ContactsListingPresenterImpl.class.getSimpleName();
 
     private final Repository repo;
     private Disposable subscriptionContactList;
 
-    ContactListPresenter(Repository repo) {
+    @Inject
+    ContactsListingPresenterImpl(Repository repo) {
         this.repo = repo;
         getViewState().loadContactsWithPermissionCheck();
     }
 
+    @Override
     void loadContacts(@Nullable String query) {
         disposeContactsSubscriptionSafely();
         subscriptionContactList = repo.getContactList(query)

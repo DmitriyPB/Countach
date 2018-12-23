@@ -20,9 +20,12 @@ import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
 import com.testing.android.countach.domain.Contact;
 
-final public class ContactDetailFragment extends MvpAppCompatFragment implements ContactDetailsView {
-    private static final String TAG = ContactDetailFragment.class.getSimpleName();
-    public static final String LOOKUP_KEY_KEY = "lookup_key_key";
+import javax.inject.Inject;
+import javax.inject.Provider;
+
+final public class ContactDetailsFragment extends MvpAppCompatFragment implements ContactDetailsView {
+    private static final String TAG = ContactDetailsFragment.class.getSimpleName();
+    private static final String LOOKUP_KEY_KEY = "lookup_key_key";
     private static final int PERMISSIONS_REQUEST_READ_CONTACT_DETAIL = 101;
 
     private TextView textViewName;
@@ -30,21 +33,30 @@ final public class ContactDetailFragment extends MvpAppCompatFragment implements
     private TextView textViewPhone;
     private ProgressBar progressBar;
 
+    @Inject
+    Provider<ContactDetailsPresenter> presenterProvider;
+
     @InjectPresenter
     ContactDetailsPresenter presenter;
 
     @ProvidePresenter
     ContactDetailsPresenter providePresenter() {
-        CountachApp app = CountachApp.get(requireContext());
-        return new ContactDetailsPresenter(app.getRepository());
+        return presenterProvider.get();
     }
 
-    public static ContactDetailFragment newInstance(String lookupKey) {
-        ContactDetailFragment fragment = new ContactDetailFragment();
+    public static ContactDetailsFragment newInstance(String lookupKey) {
+        ContactDetailsFragment fragment = new ContactDetailsFragment();
         Bundle args = new Bundle();
         args.putString(LOOKUP_KEY_KEY, lookupKey);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        CountachApp app = CountachApp.get(requireContext());
+        app.getAppComponent().plusContactDetailsComponent().inject(this);
+        super.onCreate(savedInstanceState);
     }
 
     @Nullable
@@ -99,7 +111,7 @@ final public class ContactDetailFragment extends MvpAppCompatFragment implements
     private void loadContactDetails() {
         Bundle arguments = getArguments();
         if (arguments != null) {
-            String lookupKey = arguments.getString(ContactDetailFragment.LOOKUP_KEY_KEY);
+            String lookupKey = arguments.getString(ContactDetailsFragment.LOOKUP_KEY_KEY);
             if (lookupKey != null) {
                 presenter.loadContactDetails(lookupKey);
                 return;

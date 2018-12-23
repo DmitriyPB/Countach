@@ -29,35 +29,47 @@ import com.testing.android.countach.domain.Contact;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
 
-final public class ContactListFragment extends MvpAppCompatFragment implements ContactListView {
 
-    private static final String TAG = ContactListFragment.class.getSimpleName();
+final public class ContactsListingFragment extends MvpAppCompatFragment implements ContactsListingView {
+
+    private static final String TAG = ContactsListingFragment.class.getSimpleName();
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
-    private ContactListAdapter.OnContactClickListener listener;
-    private ContactListAdapter contactAdapter;
+    private ContactsListingAdapter.OnContactClickListener listener;
+    private ContactsListingAdapter contactAdapter;
     private SearchView searchView;
     private ProgressBar progressBar;
     private RecyclerView recycler;
 
+    @Inject
+    Provider<ContactsListingPresenter> presenterProvider;
+
     @InjectPresenter
-    ContactListPresenter presenter;
+    ContactsListingPresenter presenter;
 
     @ProvidePresenter
-    ContactListPresenter providePresenter() {
-        CountachApp app = CountachApp.get(requireContext());
-        return new ContactListPresenter(app.getRepository());
+    ContactsListingPresenter providePresenter() {
+        return presenterProvider.get();
     }
 
-    public static ContactListFragment newInstance() {
-        return new ContactListFragment();
+    public static ContactsListingFragment newInstance() {
+        return new ContactsListingFragment();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        CountachApp app = CountachApp.get(requireContext());
+        app.getAppComponent().plusContactsListingComponent().inject(this);
+        super.onCreate(savedInstanceState);
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof ContactListAdapter.OnContactClickListener) {
-            listener = (ContactListAdapter.OnContactClickListener) context;
+        if (context instanceof ContactsListingAdapter.OnContactClickListener) {
+            listener = (ContactsListingAdapter.OnContactClickListener) context;
         } else {
             throw new ClassCastException(context.toString() + " must implement OnContactClickListener");
         }
@@ -91,7 +103,7 @@ final public class ContactListFragment extends MvpAppCompatFragment implements C
         recycler = view.findViewById(R.id.recycler_view_contact_list);
         recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
         recycler.addItemDecoration(new ContactDecoration(requireContext()));
-        contactAdapter = new ContactListAdapter(listener);
+        contactAdapter = new ContactsListingAdapter(listener);
         recycler.setAdapter(contactAdapter);
     }
 
