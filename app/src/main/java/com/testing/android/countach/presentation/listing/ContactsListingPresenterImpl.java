@@ -1,10 +1,10 @@
-package com.testing.android.countach.listing;
+package com.testing.android.countach.presentation.listing;
 
 import android.support.annotation.Nullable;
 
 import com.arellomobile.mvp.InjectViewState;
-import com.testing.android.countach.Repository;
 import com.testing.android.countach.domain.Contact;
+import com.testing.android.countach.domain.listing.ContactsListingInteractor;
 
 import java.util.List;
 
@@ -19,11 +19,11 @@ final public class ContactsListingPresenterImpl extends ContactsListingPresenter
 
     private static final String TAG = ContactsListingPresenterImpl.class.getSimpleName();
 
-    private final Repository repo;
+    private final ContactsListingInteractor repo;
     private Disposable subscriptionContactList;
 
     @Inject
-    ContactsListingPresenterImpl(Repository repo) {
+    ContactsListingPresenterImpl(ContactsListingInteractor repo) {
         this.repo = repo;
         getViewState().loadContactsWithPermissionCheck();
     }

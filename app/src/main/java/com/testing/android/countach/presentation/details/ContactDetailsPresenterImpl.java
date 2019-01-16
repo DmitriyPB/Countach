@@ -1,10 +1,10 @@
-package com.testing.android.countach.details;
+package com.testing.android.countach.presentation.details;
 
 import android.support.annotation.NonNull;
 
 import com.arellomobile.mvp.InjectViewState;
-import com.testing.android.countach.Repository;
 import com.testing.android.countach.domain.Contact;
+import com.testing.android.countach.domain.details.ContactDetailsInteractor;
 
 import javax.inject.Inject;
 
@@ -16,18 +16,18 @@ import io.reactivex.schedulers.Schedulers;
 final public class ContactDetailsPresenterImpl extends ContactDetailsPresenter {
 
     private static final String TAG = ContactDetailsPresenterImpl.class.getSimpleName();
-    private final Repository repo;
+    private final ContactDetailsInteractor interactor;
     private Disposable subscriptionContact;
 
     @Inject
-    ContactDetailsPresenterImpl(Repository repo) {
-        this.repo = repo;
+    ContactDetailsPresenterImpl(ContactDetailsInteractor interactor) {
+        this.interactor = interactor;
     }
 
     @Override
     public void loadContactDetails(@NonNull String lookupKey) {
         disposeDetailsSubscriptionSafely();
-        subscriptionContact = repo.getContactDetails(lookupKey)
+        subscriptionContact = interactor.getContactDetails(lookupKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(__ -> getViewState().showLoadingIndicator(true))

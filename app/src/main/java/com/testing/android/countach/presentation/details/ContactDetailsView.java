@@ -1,4 +1,4 @@
-package com.testing.android.countach.details;
+package com.testing.android.countach.presentation.details;
 
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy;

@@ -1,4 +1,4 @@
-package com.testing.android.countach.listing;
+package com.testing.android.countach.presentation.listing;
 
 import android.support.annotation.NonNull;
 import android.support.v7.recyclerview.extensions.ListAdapter;

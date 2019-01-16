@@ -1,8 +1,8 @@
 package com.testing.android.countach;
 
 
-import com.testing.android.countach.details.ContactDetailsComponent;
-import com.testing.android.countach.listing.ContactsListingComponent;
+import com.testing.android.countach.presentation.details.ContactDetailsComponent;
+import com.testing.android.countach.presentation.listing.ContactsListingComponent;
 
 import javax.inject.Singleton;
 

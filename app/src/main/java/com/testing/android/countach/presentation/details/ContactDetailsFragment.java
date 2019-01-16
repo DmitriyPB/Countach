@@ -1,4 +1,4 @@
-package com.testing.android.countach.details;
+package com.testing.android.countach.presentation.details;
 
 import android.Manifest;
 import android.content.pm.PackageManager;

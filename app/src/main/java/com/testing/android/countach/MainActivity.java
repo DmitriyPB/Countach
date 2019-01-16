@@ -6,9 +6,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.testing.android.countach.domain.Contact;
-import com.testing.android.countach.listing.ContactsListingAdapter;
-import com.testing.android.countach.details.ContactDetailsFragment;
-import com.testing.android.countach.listing.ContactsListingFragment;
+import com.testing.android.countach.presentation.listing.ContactsListingAdapter;
+import com.testing.android.countach.presentation.details.ContactDetailsFragment;
+import com.testing.android.countach.presentation.listing.ContactsListingFragment;
 
 final public class MainActivity extends AppCompatActivity implements ContactsListingAdapter.OnContactClickListener {
 

@@ -1,4 +1,4 @@
-package com.testing.android.countach.details;
+package com.testing.android.countach.presentation.details;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
