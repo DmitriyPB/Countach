@@ -1,6 +1,6 @@
 package com.testing.android.countach.domain.listing;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.testing.android.countach.domain.Contact;
 

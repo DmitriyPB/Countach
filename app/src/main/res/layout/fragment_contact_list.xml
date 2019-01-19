@@ -6,12 +6,14 @@
 	android:layout_height="match_parent"
 	android:orientation="vertical">
 
-	<android.support.v7.widget.SearchView
+	<androidx.appcompat.widget.SearchView
 		android:id="@+id/search_view_contact_list"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:imeOptions="actionSearch|flagNoExtractUi|flagNoFullscreen"
-		app:queryHint="@string/contact_list_search_hint" />
+		app:queryHint="@string/contact_list_search_hint">
+
+	</androidx.appcompat.widget.SearchView>
 
 	<ProgressBar
 		android:id="@+id/progress_bar_contact_list"
@@ -22,9 +24,25 @@
 		android:indeterminate="true"
 		tools:visibility="gone" />
 
-	<android.support.v7.widget.RecyclerView
+	<androidx.recyclerview.widget.RecyclerView
 		android:id="@+id/recycler_view_contact_list"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+		tools:itemCount="8"
 		tools:listitem="@layout/item_contact" />
+
+	<Button
+		android:id="@+id/button_all_points"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="0.2"
+		android:text="@string/all_points_button_caption" />
+
+	<Button
+		android:id="@+id/button_org_search"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="0.2"
+		android:text="@string/org_search_button_caption" />
 </LinearLayout>

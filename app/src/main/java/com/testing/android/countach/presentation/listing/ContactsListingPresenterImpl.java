@@ -1,6 +1,6 @@
 package com.testing.android.countach.presentation.listing;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.testing.android.countach.domain.Contact;

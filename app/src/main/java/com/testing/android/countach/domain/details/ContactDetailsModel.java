@@ -1,6 +1,6 @@
 package com.testing.android.countach.domain.details;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.testing.android.countach.domain.Contact;
 
@@ -12,7 +12,7 @@ final public class ContactDetailsModel implements ContactDetailsInteractor {
     private ContactDetailsRepository repo;
 
     @Inject
-    public ContactDetailsModel(ContactDetailsRepository repo) {
+    ContactDetailsModel(ContactDetailsRepository repo) {
         this.repo = repo;
     }
 

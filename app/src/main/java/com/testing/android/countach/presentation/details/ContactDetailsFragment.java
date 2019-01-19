@@ -3,22 +3,25 @@ package com.testing.android.countach.presentation.details;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arellomobile.mvp.MvpAppCompatFragment;
+import com.testing.android.countach.domain.Contact;
+import com.testing.android.countach.moxyandroidx.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
-import com.testing.android.countach.domain.Contact;
+import com.testing.android.countach.presentation.contactmap.ContactMapFragment;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -32,6 +35,7 @@ final public class ContactDetailsFragment extends MvpAppCompatFragment implement
     private TextView textViewEmail;
     private TextView textViewPhone;
     private ProgressBar progressBar;
+    private Button buttonEditLocation;
 
     @Inject
     Provider<ContactDetailsPresenter> presenterProvider;
@@ -72,6 +76,18 @@ final public class ContactDetailsFragment extends MvpAppCompatFragment implement
         textViewEmail = root.findViewById(R.id.text_view_email);
         textViewPhone = root.findViewById(R.id.text_view_phone);
         progressBar = root.findViewById(R.id.progress_bar_contact_details);
+        buttonEditLocation = root.findViewById(R.id.button_edit_location);
+        buttonEditLocation.setOnClickListener(this::onEditLocationPressed);
+    }
+
+    private void onEditLocationPressed(View view) {
+        String lookupKey = getLookupKey();
+        if (lookupKey != null) {
+            FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_container, ContactMapFragment.newInstance(lookupKey));
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
     }
 
     @Override
@@ -86,6 +102,7 @@ final public class ContactDetailsFragment extends MvpAppCompatFragment implement
         textViewEmail = null;
         textViewPhone = null;
         progressBar = null;
+        buttonEditLocation = null;
         super.onDestroyView();
     }
 
@@ -108,16 +125,22 @@ final public class ContactDetailsFragment extends MvpAppCompatFragment implement
         }
     }
 
-    private void loadContactDetails() {
+    private String getLookupKey() {
         Bundle arguments = getArguments();
         if (arguments != null) {
             String lookupKey = arguments.getString(ContactDetailsFragment.LOOKUP_KEY_KEY);
             if (lookupKey != null) {
-                presenter.loadContactDetails(lookupKey);
-                return;
+                return lookupKey;
             }
         }
         throw new IllegalArgumentException("lookup key not found");
+    }
+
+    private void loadContactDetails() {
+        String lookupKey = getLookupKey();
+        if (lookupKey != null) {
+            presenter.loadContactDetails(lookupKey);
+        }
     }
 
     @Override

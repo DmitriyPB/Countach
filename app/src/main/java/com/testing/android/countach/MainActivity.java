@@ -1,14 +1,15 @@
 package com.testing.android.countach;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 
 import com.testing.android.countach.domain.Contact;
-import com.testing.android.countach.presentation.listing.ContactsListingAdapter;
 import com.testing.android.countach.presentation.details.ContactDetailsFragment;
+import com.testing.android.countach.presentation.listing.ContactsListingAdapter;
 import com.testing.android.countach.presentation.listing.ContactsListingFragment;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 final public class MainActivity extends AppCompatActivity implements ContactsListingAdapter.OnContactClickListener {
 
@@ -26,7 +27,6 @@ final public class MainActivity extends AppCompatActivity implements ContactsLis
     private void initContactListFragment() {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, ContactsListingFragment.newInstance());
-        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 

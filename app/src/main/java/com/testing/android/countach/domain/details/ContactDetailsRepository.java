@@ -1,6 +1,6 @@
 package com.testing.android.countach.domain.details;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.testing.android.countach.domain.Contact;
 

@@ -7,30 +7,34 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
 import com.testing.android.countach.domain.Contact;
+import com.testing.android.countach.moxyandroidx.MvpAppCompatFragment;
+import com.testing.android.countach.presentation.allpoints.AllPointsFragment;
+import com.testing.android.countach.presentation.organizationsearch.OrgsListingFragment;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 final public class ContactsListingFragment extends MvpAppCompatFragment implements ContactsListingView {
@@ -42,6 +46,8 @@ final public class ContactsListingFragment extends MvpAppCompatFragment implemen
     private SearchView searchView;
     private ProgressBar progressBar;
     private RecyclerView recycler;
+    private Button buttonAllPoints;
+    private Button buttonOrgSearch;
 
     @Inject
     Provider<ContactsListingPresenter> presenterProvider;
@@ -89,17 +95,19 @@ final public class ContactsListingFragment extends MvpAppCompatFragment implemen
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                Log.d(TAG, "onQueryTextSubmit() : " + s);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                Log.d(TAG, "onQueryTextChange() : " + s);
                 loadContactsWithPermissionCheck();
                 return true;
             }
         });
+        buttonAllPoints = view.findViewById(R.id.button_all_points);
+        buttonAllPoints.setOnClickListener(this::onAllPointsButtonPressed);
+        buttonOrgSearch = view.findViewById(R.id.button_org_search);
+        buttonOrgSearch.setOnClickListener(this::onOrgSearchButtonPressed);
         recycler = view.findViewById(R.id.recycler_view_contact_list);
         recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
         recycler.addItemDecoration(new ContactDecoration(requireContext()));
@@ -113,6 +121,8 @@ final public class ContactsListingFragment extends MvpAppCompatFragment implemen
         searchView = null;
         progressBar = null;
         recycler = null;
+        buttonAllPoints = null;
+        buttonOrgSearch = null;
         super.onDestroyView();
     }
 
@@ -157,8 +167,22 @@ final public class ContactsListingFragment extends MvpAppCompatFragment implemen
         contactAdapter.submitList(list);
     }
 
+    private void onAllPointsButtonPressed(View view) {
+        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, AllPointsFragment.newInstance());
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    private void onOrgSearchButtonPressed(View view) {
+        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, OrgsListingFragment.newInstance());
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
     private static class ContactDecoration extends RecyclerView.ItemDecoration {
-        private Drawable divider;
+        private final Drawable divider;
         private final Rect bounds = new Rect();
 
         ContactDecoration(Context context) {
