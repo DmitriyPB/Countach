@@ -16,7 +16,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 final public class ContactMapRepositoryImpl implements ContactMapRepository {
@@ -52,8 +51,8 @@ final public class ContactMapRepositoryImpl implements ContactMapRepository {
     }
 
     @Override
-    public Flowable<Address> loadContactAddress(String lookupKey) {
-        return Flowable.fromCallable(() -> {
+    public Single<Address> loadContactAddress(String lookupKey) {
+        return Single.fromCallable(() -> {
             ContactExtraEntity contact = contactExtraDao.getContactByLookup(lookupKey);
             if (contact != null) {
                 return contact;

@@ -4,8 +4,8 @@ import com.testing.android.countach.domain.PinPoint;
 
 import java.util.List;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public interface AllPointsRepository {
-    Observable<List<? extends PinPoint>> loadPoints();
+    Single<List<? extends PinPoint>> loadPoints();
 }

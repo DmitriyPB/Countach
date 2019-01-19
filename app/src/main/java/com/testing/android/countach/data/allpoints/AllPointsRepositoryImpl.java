@@ -10,7 +10,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 final public class AllPointsRepositoryImpl implements AllPointsRepository {
     private ContactExtraDao dao;
@@ -21,8 +21,8 @@ final public class AllPointsRepositoryImpl implements AllPointsRepository {
     }
 
     @Override
-    public Observable<List<? extends PinPoint>> loadPoints() {
-        return Observable.fromCallable(() -> {
+    public Single<List<? extends PinPoint>> loadPoints() {
+        return Single.fromCallable(() -> {
             List<AddressBean> points = dao.loadAllContactPoints();
             if (points != null) {
                 return points;

@@ -11,7 +11,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import androidx.annotation.Nullable;
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -35,7 +34,7 @@ final public class ContactMapModel implements ContactMapInteractor {
     }
 
     @Override
-    public Flowable<Address> loadContactAddress(String lookupKey) {
+    public Single<Address> loadContactAddress(String lookupKey) {
         this.lookupKey = lookupKey;
         return repo.loadContactAddress(lookupKey);
     }

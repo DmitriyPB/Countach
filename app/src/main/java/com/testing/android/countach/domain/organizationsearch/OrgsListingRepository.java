@@ -2,8 +2,8 @@ package com.testing.android.countach.domain.organizationsearch;
 
 import java.util.List;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public interface OrgsListingRepository {
-    Observable<List<OrgSearchResult>> loadOrganizationsList(String query);
+    Single<List<OrgSearchResult>> loadOrganizationsList(String query);
 }

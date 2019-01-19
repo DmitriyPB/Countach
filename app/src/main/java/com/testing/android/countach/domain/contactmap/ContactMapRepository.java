@@ -5,13 +5,12 @@ import com.testing.android.countach.domain.Organization;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public interface ContactMapRepository {
     Single<Integer> submitContact(String lookupKey, Address currentAddress, List<Organization> currentOrganizationsList);
 
-    Flowable<Address> loadContactAddress(String lookupKey);
+    Single<Address> loadContactAddress(String lookupKey);
 
     Single<String> decode(double lat, double lon);
 

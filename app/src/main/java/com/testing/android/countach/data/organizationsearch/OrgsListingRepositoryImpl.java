@@ -16,7 +16,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 final public class OrgsListingRepositoryImpl implements OrgsListingRepository {
 
@@ -34,8 +34,8 @@ final public class OrgsListingRepositoryImpl implements OrgsListingRepository {
     }
 
     @Override
-    public Observable<List<OrgSearchResult>> loadOrganizationsList(String query) {
-        return Observable.fromCallable(() -> {
+    public Single<List<OrgSearchResult>> loadOrganizationsList(String query) {
+        return Single.fromCallable(() -> {
             List<? extends Organization> organizations = organizationDao.loadAllOrganizations("%" + query + "%");
             if (organizations != null) {
                 return organizations;
