@@ -1,6 +1,7 @@
 package com.testing.android.countach.presentation.details;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -54,9 +55,9 @@ final public class ContactDetailsFragment extends MvpAppCompatFragment implement
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
-        super.onCreate(savedInstanceState);
+        super.onAttach(context);
     }
 
     @Nullable

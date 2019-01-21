@@ -60,13 +60,8 @@ final public class ContactsListingFragment extends MvpAppCompatFragment implemen
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        AndroidSupportInjection.inject(this);
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
         super.onAttach(context);
         if (context instanceof ContactsListingAdapter.OnContactClickListener) {
             listener = (ContactsListingAdapter.OnContactClickListener) context;
