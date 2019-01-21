@@ -1,27 +1,37 @@
 package com.testing.android.countach;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 
-final public class CountachApp extends Application {
+import javax.inject.Inject;
 
-    public AppExecutors executors;
-    public Repository repository;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasActivityInjector;
+
+final public class CountachApp extends Application implements HasActivityInjector {
+
+    @Inject
+    DispatchingAndroidInjector<Activity> activityDispatchingAndroidInjector;
 
     public CountachApp() {
-        executors = new AppExecutors();
-        repository = new Repository(this);
+        createAppComponent();
+    }
+
+    private void createAppComponent() {
+        DaggerAppComponent.builder()
+                .appModule(new AppModule(this))
+                .application(this)
+                .build().inject(this);
     }
 
     public static CountachApp get(Context context) {
         return ((CountachApp) context.getApplicationContext());
     }
 
-    public Repository getRepository() {
-        return repository;
-    }
-
-    public AppExecutors getExecutors() {
-        return executors;
+    @Override
+    public AndroidInjector<Activity> activityInjector() {
+        return activityDispatchingAndroidInjector;
     }
 }

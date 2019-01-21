@@ -1,4 +1,4 @@
-package com.testing.android.countach.data;
+package com.testing.android.countach.domain;
 
 final public class Contact {
     private final String name;

@@ -1,6 +1,7 @@
-package com.testing.android.countach.ui.fragment;
+package com.testing.android.countach.presentation.details;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,41 +10,54 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
-import com.testing.android.countach.data.Contact;
-import com.testing.android.countach.presentation.presenter.ContactDetailsPresenter;
-import com.testing.android.countach.presentation.view.ContactDetailsView;
+import com.testing.android.countach.domain.Contact;
 
-final public class ContactDetailFragment extends MvpAppCompatFragment implements ContactDetailsView {
-    public static final String LOOKUP_KEY_KEY = "lookup_key_key";
+import javax.inject.Inject;
+import javax.inject.Provider;
+
+import dagger.android.support.AndroidSupportInjection;
+
+final public class ContactDetailsFragment extends MvpAppCompatFragment implements ContactDetailsView {
+    private static final String TAG = ContactDetailsFragment.class.getSimpleName();
+    private static final String LOOKUP_KEY_KEY = "lookup_key_key";
     private static final int PERMISSIONS_REQUEST_READ_CONTACT_DETAIL = 101;
 
     private TextView textViewName;
     private TextView textViewEmail;
     private TextView textViewPhone;
+    private ProgressBar progressBar;
+
+    @Inject
+    Provider<ContactDetailsPresenter> presenterProvider;
 
     @InjectPresenter
     ContactDetailsPresenter presenter;
 
     @ProvidePresenter
     ContactDetailsPresenter providePresenter() {
-        CountachApp app = CountachApp.get(requireContext());
-        return new ContactDetailsPresenter(app.getRepository(), app.getExecutors());
+        return presenterProvider.get();
     }
 
-    public static ContactDetailFragment newInstance(String lookupKey) {
-        ContactDetailFragment fragment = new ContactDetailFragment();
+    public static ContactDetailsFragment newInstance(String lookupKey) {
+        ContactDetailsFragment fragment = new ContactDetailsFragment();
         Bundle args = new Bundle();
         args.putString(LOOKUP_KEY_KEY, lookupKey);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
     }
 
     @Nullable
@@ -58,6 +72,7 @@ final public class ContactDetailFragment extends MvpAppCompatFragment implements
         textViewName = root.findViewById(R.id.text_view_name);
         textViewEmail = root.findViewById(R.id.text_view_email);
         textViewPhone = root.findViewById(R.id.text_view_phone);
+        progressBar = root.findViewById(R.id.progress_bar_contact_details);
     }
 
     @Override
@@ -71,6 +86,7 @@ final public class ContactDetailFragment extends MvpAppCompatFragment implements
         textViewName = null;
         textViewEmail = null;
         textViewPhone = null;
+        progressBar = null;
         super.onDestroyView();
     }
 
@@ -96,7 +112,7 @@ final public class ContactDetailFragment extends MvpAppCompatFragment implements
     private void loadContactDetails() {
         Bundle arguments = getArguments();
         if (arguments != null) {
-            String lookupKey = arguments.getString(ContactDetailFragment.LOOKUP_KEY_KEY);
+            String lookupKey = arguments.getString(ContactDetailsFragment.LOOKUP_KEY_KEY);
             if (lookupKey != null) {
                 presenter.loadContactDetails(lookupKey);
                 return;
@@ -110,5 +126,10 @@ final public class ContactDetailFragment extends MvpAppCompatFragment implements
         textViewName.setText(contact.getName());
         textViewEmail.setText(contact.getEmail());
         textViewPhone.setText(contact.getPhoneNumber());
+    }
+
+    @Override
+    public void showLoadingIndicator(boolean show) {
+        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }
