@@ -23,7 +23,6 @@ import android.widget.Toast;
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
 import com.testing.android.countach.domain.Contact;
 
@@ -31,6 +30,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+
+import dagger.android.support.AndroidSupportInjection;
 
 
 final public class ContactsListingFragment extends MvpAppCompatFragment implements ContactsListingView {
@@ -60,8 +61,7 @@ final public class ContactsListingFragment extends MvpAppCompatFragment implemen
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        CountachApp app = CountachApp.get(requireContext());
-        app.getAppComponent().plusContactsListingComponent().inject(this);
+        AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
     }
 

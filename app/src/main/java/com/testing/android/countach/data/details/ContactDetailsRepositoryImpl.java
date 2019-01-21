@@ -68,10 +68,8 @@ final public class ContactDetailsRepositoryImpl implements ContactDetailsReposit
                     } while (cursor.moveToNext());
                     return new Contact(name, phoneNumber, email, lookupKey);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-            return null;
+            throw new NullPointerException("contact not found");
         });
     }
 }

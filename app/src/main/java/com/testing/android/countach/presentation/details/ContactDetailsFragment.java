@@ -16,12 +16,13 @@ import android.widget.Toast;
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
 import com.testing.android.countach.domain.Contact;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+
+import dagger.android.support.AndroidSupportInjection;
 
 final public class ContactDetailsFragment extends MvpAppCompatFragment implements ContactDetailsView {
     private static final String TAG = ContactDetailsFragment.class.getSimpleName();
@@ -54,8 +55,7 @@ final public class ContactDetailsFragment extends MvpAppCompatFragment implement
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        CountachApp app = CountachApp.get(requireContext());
-        app.getAppComponent().plusContactDetailsComponent().inject(this);
+        AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
     }
 
