@@ -15,7 +15,7 @@ final public class ApiKeyFromResources implements ApiKey {
     }
 
     @Override
-    public String get() {
+    public String getApiKey() {
         return context.getString(R.string.yandex_api_key);
     }
 }

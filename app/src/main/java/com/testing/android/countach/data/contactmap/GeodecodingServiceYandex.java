@@ -24,12 +24,12 @@ final public class GeodecodingServiceYandex implements GeodecodingService {
     }
 
     @Override
-    public Single<String> decode(Double lat, Double lon) {
+    public Single<String> decode(double lat, double lon) {
         return Single.fromCallable(() -> decodeSync(lat, lon));
     }
 
     @Nullable
-    private String decodeSync(Double lat, Double lon) throws ParseException, IOException {
+    private String decodeSync(double lat, double lon) throws ParseException, IOException {
         Request request = new Request.Builder()
                 .url("https://geocode-maps.yandex.ru/1.x/?format=json&geocode=" + lon + "," + lat)
                 .build();

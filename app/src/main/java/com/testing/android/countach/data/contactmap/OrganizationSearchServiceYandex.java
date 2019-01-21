@@ -10,7 +10,6 @@ import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -34,7 +33,7 @@ final public class OrganizationSearchServiceYandex implements OrganizationSearch
         return Single.fromCallable(() -> searchReal(apiKey, text));
     }
 
-    private List<Organization> searchReal(String apiKey, String text) {
+    private List<Organization> searchReal(String apiKey, String text) throws ParseException, IOException {
         String url = "https://search-maps.yandex.ru/v1/?text=" + text + "&type=biz&lang=ru_RU&apikey=" + apiKey;
         Request request = new Request.Builder()
                 .url(url)
@@ -42,12 +41,7 @@ final public class OrganizationSearchServiceYandex implements OrganizationSearch
         try (Response response = client.newCall(request).execute()) {
             String stringResp = response.body().string();
             return extractOrganizations(stringResp);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
         }
-        return Collections.emptyList();
     }
 
     private List<Organization> extractOrganizations(String json) throws ParseException {

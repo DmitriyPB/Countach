@@ -54,7 +54,7 @@ final public class OrgEntity implements Organization {
     }
 
     public static List<OrgEntity> listFrom(List<Organization> orgs) {
-        LinkedList<OrgEntity> entities = new LinkedList<>();
+        List<OrgEntity> entities = new LinkedList<>();
         if (orgs != null && !orgs.isEmpty()) {
             for (Organization org : orgs) {
                 entities.add(new OrgEntity(org));

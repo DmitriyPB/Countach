@@ -5,7 +5,7 @@ import io.reactivex.Single;
 public interface GeodecodingService {
 
     Single<String> decode(
-            Double lat,
-            Double lon
+            double lat,
+            double lon
     );
 }

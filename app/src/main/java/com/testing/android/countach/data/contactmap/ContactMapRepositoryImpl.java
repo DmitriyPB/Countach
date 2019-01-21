@@ -16,6 +16,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.Single;
 
 final public class ContactMapRepositoryImpl implements ContactMapRepository {
@@ -68,10 +70,10 @@ final public class ContactMapRepositoryImpl implements ContactMapRepository {
 
     @Override
     public Single<List<Organization>> searchForOrganizations(String addressName) {
-        return organizationSearchService.searchForOrganizations(apiKey.get(), addressName);
+        return organizationSearchService.searchForOrganizations(apiKey.getApiKey(), addressName);
     }
 
-    private Integer saveContactAddressAndOrganizations(String lookupKey, Address contactAddress, List<Organization> organizationsList) {
+    private Integer saveContactAddressAndOrganizations(@NonNull String lookupKey, @NonNull Address contactAddress, @Nullable List<Organization> organizationsList) {
         db.runInTransaction(() -> {
             ContactExtraEntity extra = contactExtraDao.getContactByLookup(lookupKey);
             int extraId;
@@ -87,7 +89,7 @@ final public class ContactMapRepositoryImpl implements ContactMapRepository {
         return 0;
     }
 
-    private void insertAndLinkOrganizations(List<Organization> organizationsList, int extraId) {
+    private void insertAndLinkOrganizations(@Nullable List<Organization> organizationsList, int extraId) {
         if (organizationsList != null && !organizationsList.isEmpty()) {
             List<Long> orgIds = organizationDao.insertOrganizations(OrgEntity.listFrom(organizationsList));
             if (orgIds != null) {
