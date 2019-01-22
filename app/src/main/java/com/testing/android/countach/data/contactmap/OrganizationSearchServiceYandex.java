@@ -14,7 +14,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Single;
+import androidx.annotation.NonNull;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -29,8 +29,8 @@ final public class OrganizationSearchServiceYandex implements OrganizationSearch
     }
 
     @Override
-    public Single<List<Organization>> searchForOrganizations(String apiKey, String text) {
-        return Single.fromCallable(() -> searchReal(apiKey, text));
+    public List<Organization> searchForOrganizations(@NonNull String apiKey, @NonNull String text) throws IOException, ParseException {
+        return searchReal(apiKey, text);
     }
 
     private List<Organization> searchReal(String apiKey, String text) throws ParseException, IOException {

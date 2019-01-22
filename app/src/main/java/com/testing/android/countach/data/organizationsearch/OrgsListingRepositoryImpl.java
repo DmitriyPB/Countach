@@ -11,7 +11,6 @@ import com.testing.android.countach.domain.organizationsearch.OrgSearchResult;
 import com.testing.android.countach.domain.organizationsearch.OrgsListingRepository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -48,13 +47,9 @@ final public class OrgsListingRepositoryImpl implements OrgsListingRepository {
         List<OrgSearchResult> res = new ArrayList<>(organizations.size());
         for (Organization org : organizations) {
             List<String> lookups = orgContactRelationDao.getLookupsByOrgId(org.getOrgId().intValue());
-            System.out.println("org : " + org);
             if (lookups != null) {
-                System.out.println("lookups : " + Arrays.toString(lookups.toArray(new String[]{})));
                 List<Contact> contacts = selectContactsSetBy(lookups);
                 res.add(new OrgSearchResultBean(org, contacts));
-            } else {
-                System.out.println("lookups null");
             }
         }
         return res;

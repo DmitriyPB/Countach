@@ -1,23 +1,19 @@
 package com.testing.android.countach.presentation.allpoints;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
 import com.testing.android.countach.domain.PinPoint;
-import com.testing.android.countach.moxyandroidx.MvpAppCompatFragment;
+import com.testing.android.countach.moxymapfragment.BaseMapFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +24,7 @@ import javax.inject.Provider;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-final public class AllPointsFragment extends MvpAppCompatFragment implements AllPointsView, OnMapReadyCallback {
+final public class AllPointsFragment extends BaseMapFragment implements AllPointsView, OnMapReadyCallback {
 
     private GoogleMap map;
 
@@ -48,25 +44,20 @@ final public class AllPointsFragment extends MvpAppCompatFragment implements All
     }
 
     @Override
+    protected int fragmentLayout() {
+        return R.layout.fragment_contact_map;
+    }
+
+    @Override
+    protected int mapViewId() {
+        return R.id.contact_map_view;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         CountachApp app = CountachApp.get(requireContext());
         app.getAppComponent().plusAllPointsComponent().inject(this);
         super.onCreate(savedInstanceState);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_contact_map, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.contact_map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        }
     }
 
     @Override
@@ -88,6 +79,7 @@ final public class AllPointsFragment extends MvpAppCompatFragment implements All
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        super.onMapReady(googleMap);
         map = googleMap;
     }
 

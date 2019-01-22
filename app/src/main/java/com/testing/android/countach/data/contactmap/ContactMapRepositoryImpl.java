@@ -12,12 +12,17 @@ import com.testing.android.countach.domain.Address;
 import com.testing.android.countach.domain.Organization;
 import com.testing.android.countach.domain.contactmap.ContactMapRepository;
 
+import org.json.simple.parser.ParseException;
+
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import io.reactivex.Completable;
 import io.reactivex.Single;
 
 final public class ContactMapRepositoryImpl implements ContactMapRepository {
@@ -48,8 +53,10 @@ final public class ContactMapRepositoryImpl implements ContactMapRepository {
     }
 
     @Override
-    public Single<Integer> submitContact(String lookupKey, Address currentAddress, List<Organization> currentOrganizationsList) {
-        return Single.fromCallable(() -> saveContactAddressAndOrganizations(lookupKey, currentAddress, currentOrganizationsList));
+    public Completable submitContact(@NonNull String lookupKey, @NonNull Address currentAddress) {
+        return Completable.fromCallable(() -> {
+            return saveContactAddressAndOrganizations(lookupKey, currentAddress, searchForOrganizations(currentAddress.getAddressName()));
+        });
     }
 
     @Override
@@ -68,9 +75,11 @@ final public class ContactMapRepositoryImpl implements ContactMapRepository {
         return decodingService.decode(lat, lon);
     }
 
-    @Override
-    public Single<List<Organization>> searchForOrganizations(String addressName) {
-        return organizationSearchService.searchForOrganizations(apiKey.getApiKey(), addressName);
+    private List<Organization> searchForOrganizations(@Nullable String addressName) throws IOException, ParseException {
+        if (addressName != null && !addressName.isEmpty()) {
+            return organizationSearchService.searchForOrganizations(apiKey.getApiKey(), addressName);
+        }
+        return Collections.emptyList();
     }
 
     private Integer saveContactAddressAndOrganizations(@NonNull String lookupKey, @NonNull Address contactAddress, @Nullable List<Organization> organizationsList) {

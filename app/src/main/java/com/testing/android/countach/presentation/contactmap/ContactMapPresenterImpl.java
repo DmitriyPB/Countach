@@ -34,9 +34,9 @@ final public class ContactMapPresenterImpl extends ContactMapPresenter {
     }
 
     @Override
-    public void submitPinPoint() {
+    public void submitPinPoint(String lookupKey, Address address) {
         disposeSavingSubscriptionSafely();
-        subscriptionSaving = interactor.submitContact()
+        subscriptionSaving = interactor.submitContact(lookupKey, address)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onSubmitPinPointSuccess, this::onSubmitPinPointFailure);
@@ -78,7 +78,7 @@ final public class ContactMapPresenterImpl extends ContactMapPresenter {
         throwable.printStackTrace();
     }
 
-    private void onSubmitPinPointSuccess(Integer i) {
+    private void onSubmitPinPointSuccess() {
         getViewState().onSubmitSuccess();
     }
 

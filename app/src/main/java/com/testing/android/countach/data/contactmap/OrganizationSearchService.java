@@ -2,13 +2,16 @@ package com.testing.android.countach.data.contactmap;
 
 import com.testing.android.countach.domain.Organization;
 
+import org.json.simple.parser.ParseException;
+
+import java.io.IOException;
 import java.util.List;
 
-import io.reactivex.Single;
+import androidx.annotation.NonNull;
 
 public interface OrganizationSearchService {
 
-    Single<List<Organization>> searchForOrganizations(String apiKey,
-                                                      String text
-    );
+    List<Organization> searchForOrganizations(@NonNull String apiKey,
+                                              @NonNull String text
+    ) throws IOException, ParseException;
 }
