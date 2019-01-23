@@ -14,7 +14,8 @@ import javax.inject.Singleton;
 import androidx.room.Room;
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.testing.android.countach.data.room.AppDatabase.DATABASE_NAME;
 
@@ -22,8 +23,11 @@ import static com.testing.android.countach.data.room.AppDatabase.DATABASE_NAME;
 final class DataModule {
     @Provides
     @Singleton
-    OkHttpClient provideOKHttpClient() {
-        return new OkHttpClient();
+    Retrofit provideRetrofit() {
+        return new Retrofit.Builder()
+                .baseUrl("https://search-maps.yandex.ru")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
     }
 
     @Provides

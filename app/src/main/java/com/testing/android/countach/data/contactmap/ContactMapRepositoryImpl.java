@@ -8,13 +8,20 @@ import com.testing.android.countach.data.room.entity.AddressBean;
 import com.testing.android.countach.data.room.entity.ContactAddressRelationEntity;
 import com.testing.android.countach.data.room.entity.ContactExtraEntity;
 import com.testing.android.countach.data.room.entity.OrgEntity;
+import com.testing.android.countach.data.yandexresponse.geocoding.FeatureMember;
+import com.testing.android.countach.data.yandexresponse.geocoding.GeoObject;
+import com.testing.android.countach.data.yandexresponse.geocoding.YandexGeocodingResponse;
+import com.testing.android.countach.data.yandexresponse.orgsearch.CompanyMetaData;
+import com.testing.android.countach.data.yandexresponse.orgsearch.Feature;
+import com.testing.android.countach.data.yandexresponse.orgsearch.Geometry;
+import com.testing.android.countach.data.yandexresponse.orgsearch.OrganizationsSearchResponse;
+import com.testing.android.countach.data.yandexresponse.orgsearch.Properties_;
 import com.testing.android.countach.domain.Address;
 import com.testing.android.countach.domain.Organization;
 import com.testing.android.countach.domain.contactmap.ContactMapRepository;
 
-import org.json.simple.parser.ParseException;
-
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import retrofit2.Call;
 
 final public class ContactMapRepositoryImpl implements ContactMapRepository {
 
@@ -72,14 +80,71 @@ final public class ContactMapRepositoryImpl implements ContactMapRepository {
 
     @Override
     public Single<String> decode(double lat, double lon) {
-        return decodingService.decode(lat, lon);
+        return Single.fromCallable(() -> {
+            Call<YandexGeocodingResponse> call = decodingService.decode(lon + "," + lat);
+            return extractExactName(call.execute().body());
+        });
     }
 
-    private List<Organization> searchForOrganizations(@Nullable String addressName) throws IOException, ParseException {
+    @NonNull
+    private String extractExactName(@Nullable YandexGeocodingResponse response) throws Exception {
+        for (FeatureMember featureMember : response.getResponse().getGeoObjectCollection().getFeatureMember()) {
+            GeoObject geoObject = featureMember.getGeoObject();
+            if ("exact".equals(geoObject.getMetaDataProperty().getGeocoderMetaData().getPrecision())) {
+                return geoObject.getName();
+            }
+        }
+        throw new Exception("exact address not found");
+    }
+
+    private List<Organization> searchForOrganizations(@Nullable String addressName) throws IOException {
         if (addressName != null && !addressName.isEmpty()) {
-            return organizationSearchService.searchForOrganizations(apiKey.getApiKey(), addressName);
+            OrganizationsSearchResponse resp = organizationSearchService.searchForOrganizations(apiKey.getApiKey(), addressName)
+                    .execute()
+                    .body();
+            return extractOrganizations(resp);
         }
         return Collections.emptyList();
+    }
+
+    private List<Organization> extractOrganizations(OrganizationsSearchResponse response) {
+        if (response == null) throw new NullPointerException("extractOrganizations(null)");
+
+        List<Feature> features = response.getFeatures();
+        if (features == null) return Collections.emptyList();
+        List<Organization> list = new ArrayList<>(features.size());
+
+        for (Feature feature : features) {
+            double lon;
+            double lat;
+            String name;
+            long companyId;
+
+            Geometry geometry = feature.getGeometry();
+            if (geometry == null) break;
+            List<Double> coordinates = geometry.getCoordinates();
+            if (coordinates == null) break;
+            Double lont = coordinates.get(0);
+            if (lont == null) break;
+            lon = lont;
+            Double latt = coordinates.get(1);
+            if (latt == null) break;
+            lat = latt;
+
+            Properties_ properties = feature.getProperties();
+            if (properties == null) break;
+
+            CompanyMetaData companyMetaData = properties.getCompanyMetaData();
+            if (companyMetaData == null) break;
+            name = companyMetaData.getName();
+            if (name == null) break;
+            String id = companyMetaData.getId();
+            if (id == null) break;
+            companyId = Long.parseLong(id);
+
+            list.add(new OrgEntity(companyId, lat, lon, name));
+        }
+        return list;
     }
 
     private Integer saveContactAddressAndOrganizations(@NonNull String lookupKey, @NonNull Address contactAddress, @Nullable List<Organization> organizationsList) {

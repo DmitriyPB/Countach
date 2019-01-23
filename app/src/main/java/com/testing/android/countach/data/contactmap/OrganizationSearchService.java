@@ -1,17 +1,17 @@
 package com.testing.android.countach.data.contactmap;
 
-import com.testing.android.countach.domain.Organization;
-
-import org.json.simple.parser.ParseException;
+import com.testing.android.countach.data.yandexresponse.orgsearch.OrganizationsSearchResponse;
 
 import java.io.IOException;
-import java.util.List;
 
 import androidx.annotation.NonNull;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 public interface OrganizationSearchService {
-
-    List<Organization> searchForOrganizations(@NonNull String apiKey,
-                                              @NonNull String text
-    ) throws IOException, ParseException;
+    @GET("https://search-maps.yandex.ru/v1/?type=biz&lang=ru_RU")
+    Call<OrganizationsSearchResponse> searchForOrganizations(@NonNull @Query("apikey") String apiKey,
+                                                             @NonNull @Query("text") String text
+    ) throws IOException;
 }
