@@ -4,7 +4,11 @@ import com.testing.android.countach.data.contactmap.ApiKey;
 import com.testing.android.countach.data.contactmap.ApiKeyFromResources;
 import com.testing.android.countach.data.contactmap.ContactMapRepositoryImpl;
 import com.testing.android.countach.data.contactmap.GeodecodingService;
-import com.testing.android.countach.data.contactmap.OrganizationSearchService;
+import com.testing.android.countach.data.contactmap.OrganizationsSearchService;
+import com.testing.android.countach.data.contactmap.YandexGeodecodingClient;
+import com.testing.android.countach.data.contactmap.YandexGeodecodingService;
+import com.testing.android.countach.data.contactmap.YandexOrganizationsSearchClient;
+import com.testing.android.countach.data.contactmap.YandexOrganizationsSearchService;
 import com.testing.android.countach.domain.contactmap.ContactMapInteractor;
 import com.testing.android.countach.domain.contactmap.ContactMapModel;
 import com.testing.android.countach.domain.contactmap.ContactMapRepository;
@@ -30,15 +34,23 @@ public abstract class ContactMapModule {
 
     @Provides
     @ContactMapScope
-    static GeodecodingService provideGeodecodeService(Retrofit retrofit) {
-        return retrofit.create(GeodecodingService.class);
+    static YandexGeodecodingClient provideGeodecodeService(Retrofit retrofit) {
+        return retrofit.create(YandexGeodecodingClient.class);
     }
 
     @Provides
     @ContactMapScope
-    static OrganizationSearchService provideOrganizationSearchService(Retrofit retrofit) {
-        return retrofit.create(OrganizationSearchService.class);
+    static YandexOrganizationsSearchClient provideOrganizationSearchService(Retrofit retrofit) {
+        return retrofit.create(YandexOrganizationsSearchClient.class);
     }
+
+    @Binds
+    @ContactMapScope
+    abstract OrganizationsSearchService provideOrganizationsSearchService(YandexOrganizationsSearchService service);
+
+    @Binds
+    @ContactMapScope
+    abstract GeodecodingService provideGeodecodingService(YandexGeodecodingService service);
 
     @Binds
     @ContactMapScope
