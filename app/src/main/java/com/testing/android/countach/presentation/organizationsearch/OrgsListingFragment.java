@@ -1,5 +1,6 @@
 package com.testing.android.countach.presentation.organizationsearch;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +9,6 @@ import android.widget.ProgressBar;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
 import com.testing.android.countach.domain.organizationsearch.OrgSearchResult;
 import com.testing.android.countach.moxyandroidx.MvpAppCompatFragment;
@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import dagger.android.support.AndroidSupportInjection;
 
 
 final public class OrgsListingFragment extends MvpAppCompatFragment implements OrgsListingView {
@@ -50,11 +51,17 @@ final public class OrgsListingFragment extends MvpAppCompatFragment implements O
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        CountachApp app = CountachApp.get(requireContext());
-        app.getAppComponent().plusOrgsListingComponent().inject(this);
-        super.onCreate(savedInstanceState);
+    public void onAttach(@NonNull Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
     }
+
+    //    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        CountachApp app = CountachApp.get(requireContext());
+//        app.getAppComponent().plusOrgsListingComponent().inject(this);
+//        super.onCreate(savedInstanceState);
+//    }
 
     @Nullable
     @Override

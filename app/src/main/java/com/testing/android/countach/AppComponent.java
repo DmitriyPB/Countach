@@ -1,30 +1,32 @@
 package com.testing.android.countach;
 
 
-import com.testing.android.countach.presentation.allpoints.AllPointsComponent;
-import com.testing.android.countach.presentation.details.ContactDetailsComponent;
-import com.testing.android.countach.presentation.listing.ContactsListingComponent;
-import com.testing.android.countach.presentation.contactmap.ContactMapComponent;
-import com.testing.android.countach.presentation.organizationsearch.OrgsListingComponent;
-
 import javax.inject.Singleton;
 
+import dagger.BindsInstance;
 import dagger.Component;
-
+import dagger.android.AndroidInjectionModule;
+import dagger.android.support.AndroidSupportInjectionModule;
 
 @Singleton
 @Component(modules = {
+        AndroidSupportInjectionModule.class,
+        AndroidInjectionModule.class,
         AppModule.class,
-        DataModule.class
+        DataModule.class,
+        ActivityBuilder.class
 })
 public interface AppComponent {
-    ContactDetailsComponent plusContactDetailsComponent();
 
-    ContactsListingComponent plusContactsListingComponent();
+    @Component.Builder
+    interface Builder {
+        @BindsInstance
+        Builder application(CountachApp app);
 
-    ContactMapComponent plusContactMapComponent();
+        Builder appModule(AppModule appModule);
 
-    AllPointsComponent plusAllPointsComponent();
+        AppComponent build();
+    }
 
-    OrgsListingComponent plusOrgsListingComponent();
+    void inject(CountachApp app);
 }

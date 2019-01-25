@@ -1,12 +1,9 @@
 package com.testing.android.countach.presentation.details;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +12,21 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.testing.android.countach.domain.Contact;
-import com.testing.android.countach.moxyandroidx.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
+import com.testing.android.countach.domain.Contact;
+import com.testing.android.countach.moxyandroidx.MvpAppCompatFragment;
 import com.testing.android.countach.presentation.contactmap.ContactMapFragment;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentTransaction;
+import dagger.android.support.AndroidSupportInjection;
 
 final public class ContactDetailsFragment extends MvpAppCompatFragment implements ContactDetailsView {
     private static final String TAG = ContactDetailsFragment.class.getSimpleName();
@@ -57,10 +59,9 @@ final public class ContactDetailsFragment extends MvpAppCompatFragment implement
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        CountachApp app = CountachApp.get(requireContext());
-        app.getAppComponent().plusContactDetailsComponent().inject(this);
-        super.onCreate(savedInstanceState);
+    public void onAttach(@NonNull Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
     }
 
     @Nullable

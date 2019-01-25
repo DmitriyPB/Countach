@@ -10,6 +10,6 @@ public interface ContactDetailsView extends MvpView {
     @StateStrategyType(AddToEndSingleStrategy.class)
     void applyContact(Contact contact);
 
-    @StateStrategyType(OneExecutionStateStrategy.class)
+    @StateStrategyType(AddToEndSingleStrategy.class)
     void showLoadingIndicator(boolean show);
 }

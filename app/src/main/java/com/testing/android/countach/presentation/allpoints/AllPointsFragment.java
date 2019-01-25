@@ -1,5 +1,6 @@
 package com.testing.android.countach.presentation.allpoints;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -23,6 +24,7 @@ import javax.inject.Provider;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import dagger.android.support.AndroidSupportInjection;
 
 final public class AllPointsFragment extends BaseMapFragment implements AllPointsView, OnMapReadyCallback {
 
@@ -54,11 +56,17 @@ final public class AllPointsFragment extends BaseMapFragment implements AllPoint
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        CountachApp app = CountachApp.get(requireContext());
-        app.getAppComponent().plusAllPointsComponent().inject(this);
-        super.onCreate(savedInstanceState);
+    public void onAttach(@NonNull Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
     }
+
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        CountachApp app = CountachApp.get(requireContext());
+//        app.getAppComponent().plusAllPointsComponent().inject(this);
+//        super.onCreate(savedInstanceState);
+//    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

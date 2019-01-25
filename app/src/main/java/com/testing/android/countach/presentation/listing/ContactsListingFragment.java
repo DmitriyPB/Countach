@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
 import com.testing.android.countach.domain.Contact;
 import com.testing.android.countach.moxyandroidx.MvpAppCompatFragment;
@@ -35,6 +34,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import dagger.android.support.AndroidSupportInjection;
 
 
 final public class ContactsListingFragment extends MvpAppCompatFragment implements ContactsListingView {
@@ -65,14 +65,8 @@ final public class ContactsListingFragment extends MvpAppCompatFragment implemen
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        CountachApp app = CountachApp.get(requireContext());
-        app.getAppComponent().plusContactsListingComponent().inject(this);
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
         super.onAttach(context);
         if (context instanceof ContactsListingAdapter.OnContactClickListener) {
             listener = (ContactsListingAdapter.OnContactClickListener) context;

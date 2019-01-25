@@ -34,7 +34,7 @@ final public class ContactsListingPresenterImpl extends ContactsListingPresenter
         subscriptionContactList = repo.getContactList(query)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(__ -> getViewState().showLoadingIndicator(true))
+                .doOnSubscribe(onSubscribe -> getViewState().showLoadingIndicator(true))
                 .doAfterTerminate(() -> getViewState().showLoadingIndicator(false))
                 .subscribe(this::onGetContactsSuccess, this::onGetContactsFailure);
     }

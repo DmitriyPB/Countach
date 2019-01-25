@@ -1,5 +1,6 @@
 package com.testing.android.countach.presentation.contactmap;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +23,7 @@ import javax.inject.Provider;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import dagger.android.support.AndroidSupportInjection;
 
 final public class ContactMapFragment extends BaseMapFragment implements ContactMapView {
     private static final String ARG_LOOKUP_KEY_KEY = "lookup_key_key";
@@ -64,11 +66,17 @@ final public class ContactMapFragment extends BaseMapFragment implements Contact
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        CountachApp app = CountachApp.get(requireContext());
-        app.getAppComponent().plusContactMapComponent().inject(this);
-        super.onCreate(savedInstanceState);
+    public void onAttach(@NonNull Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
     }
+
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        CountachApp app = CountachApp.get(requireContext());
+//        app.getAppComponent().plusContactMapComponent().inject(this);
+//        super.onCreate(savedInstanceState);
+//    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
