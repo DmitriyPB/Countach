@@ -4,7 +4,7 @@ import androidx.annotation.Nullable;
 
 import com.arellomobile.mvp.MvpPresenter;
 
-abstract class OrgsListingPresenter extends MvpPresenter<OrgsListingView> {
+public abstract class OrgsListingPresenter extends MvpPresenter<OrgsListingView> {
 
     abstract void loadOrganizationByQuery(@Nullable String query);
 }

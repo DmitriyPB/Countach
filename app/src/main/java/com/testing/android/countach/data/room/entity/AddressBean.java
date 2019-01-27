@@ -47,4 +47,28 @@ final public class AddressBean implements Address {
                 ", addressName='" + addressName + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AddressBean)) return false;
+
+        AddressBean that = (AddressBean) o;
+
+        if (Double.compare(that.getLat(), getLat()) != 0) return false;
+        if (Double.compare(that.getLon(), getLon()) != 0) return false;
+        return getAddressName() != null ? getAddressName().equals(that.getAddressName()) : that.getAddressName() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(getLat());
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(getLon());
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (getAddressName() != null ? getAddressName().hashCode() : 0);
+        return result;
+    }
 }

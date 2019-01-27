@@ -6,14 +6,16 @@ import android.content.Context;
 
 import javax.inject.Inject;
 
+import androidx.annotation.VisibleForTesting;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
 
 final public class CountachApp extends Application implements HasActivityInjector {
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Inject
-    DispatchingAndroidInjector<Activity> activityDispatchingAndroidInjector;
+    public DispatchingAndroidInjector<Activity> activityDispatchingAndroidInjector;
 
     public CountachApp() {
         createAppComponent();

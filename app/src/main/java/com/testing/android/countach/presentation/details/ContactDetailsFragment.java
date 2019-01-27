@@ -138,10 +138,7 @@ final public class ContactDetailsFragment extends MvpAppCompatFragment implement
     }
 
     private void loadContactDetails() {
-        String lookupKey = getLookupKey();
-        if (lookupKey != null) {
-            presenter.loadContactDetails(lookupKey);
-        }
+        presenter.loadContactDetails(getLookupKey());
     }
 
     @Override

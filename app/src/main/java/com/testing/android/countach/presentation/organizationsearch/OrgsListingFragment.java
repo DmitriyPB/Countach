@@ -56,13 +56,6 @@ final public class OrgsListingFragment extends MvpAppCompatFragment implements O
         super.onAttach(context);
     }
 
-    //    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        CountachApp app = CountachApp.get(requireContext());
-//        app.getAppComponent().plusOrgsListingComponent().inject(this);
-//        super.onCreate(savedInstanceState);
-//    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

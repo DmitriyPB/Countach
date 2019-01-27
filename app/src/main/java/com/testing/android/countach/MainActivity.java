@@ -5,9 +5,9 @@ import android.os.Bundle;
 import com.testing.android.countach.domain.Contact;
 import com.testing.android.countach.presentation.details.ContactDetailsFragment;
 import com.testing.android.countach.presentation.listing.ContactsListingAdapter;
-import com.testing.android.countach.presentation.listing.ContactsListingFragment;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,28 +24,35 @@ final public class MainActivity extends AppCompatActivity implements ContactsLis
     @Inject
     DispatchingAndroidInjector<Fragment> fragmentDispatchingAndroidInjector;
 
+    @Inject
+    Provider<Fragment> initialFragmentProvider;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
-            initContactListFragment();
+            setFragment(initialFragmentProvider.get());
         }
     }
 
-    private void initContactListFragment() {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, ContactsListingFragment.newInstance());
-        fragmentTransaction.commit();
+    public void setFragment(Fragment fragment) {
+        setFragment(fragment, false);
+    }
+
+    public void setFragment(Fragment fragment, boolean addToBackStack) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment);
+        if (addToBackStack) {
+            transaction.addToBackStack(null);
+        }
+        transaction.commit();
     }
 
     @Override
     public void onContactClicked(Contact contact) {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, ContactDetailsFragment.newInstance(contact.getLookup()));
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+        setFragment(ContactDetailsFragment.newInstance(contact.getLookup()), true);
     }
 
     @Override

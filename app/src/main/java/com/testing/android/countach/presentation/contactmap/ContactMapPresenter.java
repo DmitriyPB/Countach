@@ -4,7 +4,7 @@ import com.arellomobile.mvp.MvpPresenter;
 import com.testing.android.countach.domain.Address;
 import com.testing.android.countach.domain.PinPoint;
 
-abstract class ContactMapPresenter extends MvpPresenter<ContactMapView> {
+public abstract class ContactMapPresenter extends MvpPresenter<ContactMapView> {
 
     abstract void loadPinPointForContact(String lookupKey);
 

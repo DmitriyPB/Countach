@@ -1,39 +1,39 @@
 package com.testing.android.countach.presentation.listing;
 
-import androidx.annotation.Nullable;
-
 import com.arellomobile.mvp.InjectViewState;
 import com.testing.android.countach.domain.Contact;
 import com.testing.android.countach.domain.listing.ContactsListingInteractor;
+import com.testing.android.countach.rxschedulers.SchedulersProvider;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import androidx.annotation.Nullable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 @InjectViewState
 final public class ContactsListingPresenterImpl extends ContactsListingPresenter {
 
     private static final String TAG = ContactsListingPresenterImpl.class.getSimpleName();
 
-    private final ContactsListingInteractor repo;
+    private final ContactsListingInteractor interactor;
+    private SchedulersProvider schedulers;
     private Disposable subscriptionContactList;
 
     @Inject
-    ContactsListingPresenterImpl(ContactsListingInteractor repo) {
-        this.repo = repo;
+    ContactsListingPresenterImpl(ContactsListingInteractor interactor, SchedulersProvider schedulersProvider) {
+        this.interactor = interactor;
+        this.schedulers = schedulersProvider;
         getViewState().loadContactsWithPermissionCheck();
     }
 
     @Override
     void loadContacts(@Nullable String query) {
         disposeContactsSubscriptionSafely();
-        subscriptionContactList = repo.getContactList(query)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        subscriptionContactList = interactor.getContactList(query)
+                .subscribeOn(schedulers.ioScheduler())
+                .observeOn(schedulers.uiScheduler())
                 .doOnSubscribe(onSubscribe -> getViewState().showLoadingIndicator(true))
                 .doAfterTerminate(() -> getViewState().showLoadingIndicator(false))
                 .subscribe(this::onGetContactsSuccess, this::onGetContactsFailure);

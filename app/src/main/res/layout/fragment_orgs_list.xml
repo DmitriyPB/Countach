@@ -22,7 +22,7 @@
 		android:layout_height="match_parent"
 		android:layout_gravity="center"
 		android:indeterminate="true"
-		tools:visibility="gone" />
+		android:visibility="gone" />
 
 	<androidx.recyclerview.widget.RecyclerView
 		android:id="@+id/recycler_view_org_list"

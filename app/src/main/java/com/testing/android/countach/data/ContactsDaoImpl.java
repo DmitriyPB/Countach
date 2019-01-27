@@ -11,6 +11,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
+
 final public class ContactsDaoImpl implements ContactsDao {
 
     private static final String[] PROJECTION_ALL_CONTACTS = {
@@ -29,7 +31,7 @@ final public class ContactsDaoImpl implements ContactsDao {
     }
 
     @Override
-    public List<Contact> queryContacts(String selection, String[] selectionArgs, String sortBy) {
+    public List<Contact> queryContacts(@Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortBy) {
         try (Cursor cursor = appContext.getContentResolver().query(
                 ContactsContract.Data.CONTENT_URI,
                 PROJECTION_ALL_CONTACTS,
@@ -41,7 +43,7 @@ final public class ContactsDaoImpl implements ContactsDao {
         }
     }
 
-    private List<Contact> extractContacts(Cursor cursor) {
+    static List<Contact> extractContacts(Cursor cursor) {
         List<Contact> container = new LinkedList<>();
         if (cursor != null && cursor.getCount() > 0) {
 
@@ -79,7 +81,7 @@ final public class ContactsDaoImpl implements ContactsDao {
         return container;
     }
 
-    private class Constructor {
+    private static class Constructor {
         String lookupKey = null;
         String phoneNumber = null;
         String email = null;

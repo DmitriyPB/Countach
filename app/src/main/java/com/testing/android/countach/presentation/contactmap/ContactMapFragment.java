@@ -12,7 +12,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
 import com.testing.android.countach.data.room.entity.AddressBean;
 import com.testing.android.countach.domain.Address;
@@ -70,13 +69,6 @@ final public class ContactMapFragment extends BaseMapFragment implements Contact
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
     }
-
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        CountachApp app = CountachApp.get(requireContext());
-//        app.getAppComponent().plusContactMapComponent().inject(this);
-//        super.onCreate(savedInstanceState);
-//    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -160,9 +152,11 @@ final public class ContactMapFragment extends BaseMapFragment implements Contact
     public void onGeodecodingFinished(Address point) {
         if (point == null || point.getAddressName().isEmpty()) {
             hideSaveButton();
-            marker.hideInfoWindow();
-            marker.setTitle(getString(R.string.map_address_not_found));
-            marker.showInfoWindow();
+            if (marker != null) {
+                marker.hideInfoWindow();
+                marker.setTitle(getString(R.string.map_address_not_found));
+                marker.showInfoWindow();
+            }
         } else {
             applyContactPinPoint(point);
             showSaveButton();

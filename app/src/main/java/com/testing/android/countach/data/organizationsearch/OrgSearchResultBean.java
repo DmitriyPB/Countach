@@ -12,7 +12,7 @@ final public class OrgSearchResultBean implements OrgSearchResult {
     private final Organization org;
     private final List<Contact> contacts;
 
-    OrgSearchResultBean(Organization org, List<Contact> contacts) {
+    public OrgSearchResultBean(Organization org, List<Contact> contacts) {
         this.org = org;
         this.contacts = contacts;
     }

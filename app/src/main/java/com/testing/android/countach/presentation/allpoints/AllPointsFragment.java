@@ -11,7 +11,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.testing.android.countach.CountachApp;
 import com.testing.android.countach.R;
 import com.testing.android.countach.domain.PinPoint;
 import com.testing.android.countach.moxymapfragment.BaseMapFragment;
@@ -60,13 +59,6 @@ final public class AllPointsFragment extends BaseMapFragment implements AllPoint
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
     }
-
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        CountachApp app = CountachApp.get(requireContext());
-//        app.getAppComponent().plusAllPointsComponent().inject(this);
-//        super.onCreate(savedInstanceState);
-//    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
