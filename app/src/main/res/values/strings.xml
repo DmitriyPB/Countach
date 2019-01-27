@@ -4,4 +4,14 @@
 	<string name="contact_email">Email</string>
 	<string name="contact_name">Name</string>
 	<string name="permission_denied_warning">Until you grant the permission, we cannot display the contacts</string>
+	<string name="contact_list_search_hint">Search by name</string>
+	<string name="title_activity_maps">Map</string>
+	<string name="contact_location">Location</string>
+	<string name="save_button_caption">Save</string>
+	<string name="map_address_not_found">Address not found</string>
+	<string name="map_search_in_progress">Searching …</string>
+	<string name="all_points_button_caption">All points</string>
+	<string name="details_map_button_caption">On map</string>
+	<string name="org_list_search_hint">Search by org</string>
+	<string name="org_search_button_caption">Organizations search</string>
 </resources>

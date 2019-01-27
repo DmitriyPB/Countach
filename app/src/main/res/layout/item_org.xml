@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical">
+
+	<TextView
+		android:id="@+id/text_view_org_name"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="@dimen/margin_fat"
+		android:layout_marginLeft="@dimen/margin_fat"
+		android:layout_marginEnd="@dimen/margin_fat"
+		android:layout_marginRight="@dimen/margin_fat"
+		android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
+		tools:text="GazMyas" />
+
+	<androidx.recyclerview.widget.RecyclerView
+		android:id="@+id/recycler_view_orgs_contact_list"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_marginStart="25dp"
+		android:layout_weight="1"
+		tools:itemCount="8"
+		tools:listitem="@layout/item_orgs_contact" />
+</LinearLayout>
