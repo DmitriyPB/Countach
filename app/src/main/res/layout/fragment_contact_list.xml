@@ -1,12 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	xmlns:tools="http://schemas.android.com/tools">
+	android:orientation="vertical">
 
-	<android.support.v7.widget.RecyclerView
-		android:id="@+id/recycler_view_contact_list"
+	<androidx.appcompat.widget.SearchView
+		android:id="@+id/search_view_contact_list"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:imeOptions="actionSearch|flagNoExtractUi|flagNoFullscreen"
+		app:queryHint="@string/contact_list_search_hint">
+
+	</androidx.appcompat.widget.SearchView>
+
+	<ProgressBar
+		android:id="@+id/progress_bar_contact_list"
+		style="?android:progressBarStyle"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		tools:listitem ="@layout/item_contact"/>
-</FrameLayout>
+		android:layout_gravity="center"
+		android:indeterminate="true"
+		tools:visibility="gone" />
+
+	<androidx.recyclerview.widget.RecyclerView
+		android:id="@+id/recycler_view_contact_list"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+		tools:itemCount="8"
+		tools:listitem="@layout/item_contact" />
+
+	<Button
+		android:id="@+id/button_all_points"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="0.2"
+		android:text="@string/all_points_button_caption" />
+
+	<Button
+		android:id="@+id/button_org_search"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="0.2"
+		android:text="@string/org_search_button_caption" />
+</LinearLayout>
